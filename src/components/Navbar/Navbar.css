@@ -1,0 +1,67 @@
+/* src/components/Navbar/Navbar.css */
+.navbar {
+    background-color: #090909;
+    padding: 15px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.navBar {
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.navBar li {
+    margin: 0 20px;
+}
+
+.navBar a {
+    color: #ecf0f1;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.navBar a:hover {
+  color: #4adb34;
+  transform: scale(1.1);
+}
+
+.logout-button {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+
+/* Media queries para hacer la barra de navegación responsiva */
+@media (max-width: 768px) {
+    .navBar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navBar li {
+        margin: 10px 0;
+    }
+}
+

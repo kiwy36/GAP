@@ -1,0 +1,30 @@
+/* src/components/FilterProducts.css */
+
+.filter-products {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px;
+}
+
+.filter-products input,
+.filter-products select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.filter-products button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.filter-products button:hover {
+    background-color: #0056b3;
+}

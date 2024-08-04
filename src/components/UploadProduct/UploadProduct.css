@@ -1,0 +1,45 @@
+/* src/components/UploadProduct/UploadProduct.css */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upload-form input,
+.upload-form select,
+.upload-form button {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.upload-form input:focus,
+.upload-form select:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+.upload-form button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.upload-form button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+.upload-form button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
