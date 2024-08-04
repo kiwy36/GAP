@@ -42,3 +42,15 @@
     font-weight: 700;
     color: #333;
 }
+/* Media queries for mobile view */
+@media (max-width: 768px) {
+    .product-card {
+        width: calc(50% - 20px); /* Two cards per row */
+    }
+}
+
+@media (max-width: 480px) {
+    .product-card {
+        width: 100%; /* One card per row */
+    }
+}
