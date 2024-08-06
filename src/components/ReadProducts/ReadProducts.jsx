@@ -28,6 +28,7 @@ const ReadProducts = () => {
                     }));
                     setProducts(productsList);
                     setFilteredProducts(productsList);
+                    console.log('Productos leídos desde Firestore:', productsList);
                 } catch (error) {
                     console.error('Error al leer productos:', error);
                 }
