@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from '../../services/firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -38,17 +38,15 @@ const ReadProducts = () => {
         }
     }, [user]);
 
-    const handleFilter = (filters) => {
+    const handleFilter = useCallback((filters) => {
         const { name, barcode, category } = filters;
-        const filtered = products.filter(product => {
-            return (
-                (name ? product.nombre.toLowerCase().includes(name.toLowerCase()) : true) &&
-                (barcode ? product.codigo.includes(barcode) : true) &&
-                (category ? product.categoria === category : true)
-            );
-        });
+        const filtered = products.filter(product =>
+            (name ? product.nombre.toLowerCase().includes(name.toLowerCase()) : true) &&
+            (barcode ? product.codigo.includes(barcode) : true) &&
+            (category ? product.categoria === category : true)
+        );
         setFilteredProducts(filtered);
-    };
+    }, [products]);
 
     if (!user) {
         return <p>Por favor, inicie sesión para ver los productos.</p>;
@@ -69,7 +67,7 @@ const ReadProducts = () => {
                             <p><strong>Categoría:</strong> {product.categoria || 'N/A'}</p>
                             <p><strong>Precio:</strong> ${product.precio}</p>
                             <p><strong>Stock:</strong> {product.stock}</p>
-                            <p><strong>ID:</strong> {product.id}</p>
+                            <p><strong>Observaciones:</strong> {product.observaciones}</p>
                         </div>
                     ))}
                 </div>

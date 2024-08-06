@@ -5,16 +5,16 @@ import Swal from 'sweetalert2';
 import './EditProduct.css';
 
 const categories = [
-    "Categoría 1", "Categoría 2", "Categoría 3", "Categoría 4", "Categoría 5",
-    "Categoría 6", "Categoría 7", "Categoría 8", "Categoría 9", "Categoría 10",
-    "Categoría 11", "Categoría 12", "Categoría 13", "Categoría 14", "Categoría 15",
-    "Categoría 16", "Categoría 17", "Categoría 18", "Categoría 19", "Categoría 20",
-    "Categoría 21", "Categoría 22", "Categoría 23", "Categoría 24", "Categoría 25"
+    "Agua", "Alcohol varios", "Caramelera", "Carbón", "Cervezas", "Cigarrillos", "Comidas hechas",
+    "Conservas", "Despensa", "Dulces", "Energizante", "Fiambrería", "Galletitas", "Gaseosas", "Hamburguesas",
+    "Heladería", "Heladería", "Jugos", "Hielo", "Leña", "Licores", "Lácteos", "Limpieza", "Panificados", "Pastas",
+    "Pepeleria", "Regalaría", "Salchichas", "Snacks salados", "Sodas", "Sueltos", "Tabaco", "Tecnología",
+    "Varios", "Verdulería", "Vinos",
 ];
 
 const EditProduct = () => {
     const [search, setSearch] = useState('');
-    const [searchBy, setSearchBy] = useState('id');
+    const [searchBy, setSearchBy] = useState('codigo'); // Default to 'codigo'
     const [product, setProduct] = useState(null);
 
     const handleSearchChange = (e) => setSearch(e.target.value);
@@ -25,12 +25,19 @@ const EditProduct = () => {
         try {
             let docRef;
 
-            if (searchBy === 'id') {
-                docRef = doc(db, 'Productos', search);
-            } else {
+            if (searchBy === 'codigo') {
                 const q = query(
                     collection(db, 'Productos'),
-                    where(searchBy, '==', search)
+                    where('codigo', '==', search)
+                );
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    docRef = doc(db, 'Productos', querySnapshot.docs[0].id);
+                }
+            } else if (searchBy === 'nombre') {
+                const q = query(
+                    collection(db, 'Productos'),
+                    where('nombre', '==', search)
                 );
                 const querySnapshot = await getDocs(q);
                 if (!querySnapshot.empty) {
@@ -103,13 +110,12 @@ const EditProduct = () => {
         <div className="edit-product">
             <div className="search-container">
                 <select value={searchBy} onChange={handleSearchByChange}>
-                    <option value="id">Buscar por ID</option>
                     <option value="codigo">Buscar por Código de Barra</option>
                     <option value="nombre">Buscar por Nombre</option>
                 </select>
                 <input
                     type="text"
-                    placeholder={`Ingrese ${searchBy === 'id' ? 'ID' : searchBy === 'codigo' ? 'Código de Barra' : 'Nombre'}`}
+                    placeholder={`Ingrese ${searchBy === 'codigo' ? 'Código de Barra' : 'Nombre'}`}
                     value={search}
                     onChange={handleSearchChange}
                 />
@@ -157,6 +163,13 @@ const EditProduct = () => {
                         value={product.stock}
                         onChange={handleChange}
                         required
+                    />
+                    <textarea
+                        name="observaciones"
+                        placeholder="Observaciones (máx. 30 caracteres)"
+                        value={product.observaciones || ''}
+                        onChange={handleChange}
+                        maxLength={30}
                     />
                     <button type="submit">Actualizar Producto</button>
                 </form>

@@ -5,11 +5,11 @@ import Swal from 'sweetalert2';
 import './UploadProduct.css';
 
 const categories = [
-    "Categoría 1", "Categoría 2", "Categoría 3", "Categoría 4", "Categoría 5",
-    "Categoría 6", "Categoría 7", "Categoría 8", "Categoría 9", "Categoría 10",
-    "Categoría 11", "Categoría 12", "Categoría 13", "Categoría 14", "Categoría 15",
-    "Categoría 16", "Categoría 17", "Categoría 18", "Categoría 19", "Categoría 20",
-    "Categoría 21", "Categoría 22", "Categoría 23", "Categoría 24", "Categoría 25"
+    "Agua", "Alcohol varios", "Caramelera", "Carbón", "Cervezas", "Cigarrillos", "Comidas hechas",
+    "Conservas", "Despensa", "Dulces", "Energizante", "Fiambrería", "Galletitas", "Gaseosas", "Hamburguesas",
+    "Heladería", "Jugos", "Hielo", "Leña", "Licores", "Lácteos", "Limpieza", "Panificados", "Pastas",
+    "Pepeleria", "Regalaría", "Salchichas", "Snacks salados", "Sodas", "Sueltos", "Tabaco", "Tecnología",
+    "Varios", "Verdulería", "Vinos",
 ];
 
 const UploadProduct = () => {
@@ -19,6 +19,7 @@ const UploadProduct = () => {
         precio: '',
         categoria: '',
         stock: '',
+        observaciones: '',
     });
 
     const [loading, setLoading] = useState(false);
@@ -58,6 +59,7 @@ const UploadProduct = () => {
                 precio: '',
                 categoria: '',
                 stock: '',
+                observaciones: '',
             });
         } catch (error) {
             Swal.fire({
@@ -114,6 +116,14 @@ const UploadProduct = () => {
                 value={product.stock}
                 onChange={handleChange}
                 required
+            />
+            <input
+                name="observaciones"
+                placeholder="Observaciones (máximo 30 caracteres)"
+                type="text"
+                value={product.observaciones}
+                onChange={handleChange}
+                maxLength="30"
             />
             <button type="submit" disabled={loading}>
                 {loading ? 'Subiendo...' : 'Subir Producto'}
