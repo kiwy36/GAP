@@ -20,11 +20,19 @@ const Home = () => {
     return (
         <div className="home-container">
         {user ? (
-            <h2>¡Bienvenido, {user.email}!</h2>
+            <>
+            <div className='titles-app'>
+                <h1>Gestor de almacenamiento de informacion de productos</h1>
+                <h2>¡Bienvenido, {user.email}!</h2>
+                <h2>En esta app podra subir informacion de sus productos, verla y actualizarla a gusto</h2>
+                <h3>proximaneten agregaremos control de stock y info de ventas</h3>
+            </div>
+            <img className='background-image' src="https://lh3.googleusercontent.com/pw/AP1GczNg294d1O44mTghGBntqW5dO-LhA7hnWUicyp0kkMhG2QNfpdZUY4vWRkzB5Io5qZzgPAVVqU8RZintitNqUsz-PQvN_RajR1WZn-32rl0OvfYQJ4F9oLcr_YWFEGlGQu2VUdOg6P6KE-eRFPVwlOiJkA=w618-h618-s-no?authuser=0" alt="imghome" />
+            </>
         ) : (
             <div className="auth-section">
-            <Login />
-            <Register />
+                <Login />
+                <Register />
             </div>
         )}
         </div>
