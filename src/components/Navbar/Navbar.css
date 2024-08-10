@@ -1,4 +1,3 @@
-/* src/components/Navbar/Navbar.css */
 .navbar {
     background-color: #090909;
     padding: 15px 20px;
@@ -6,9 +5,26 @@
     box-sizing: border-box;
     display: flex;
     justify-content: center;
+    align-items: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
+.menu-icon {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.icon-bar {
+    background-color: #ecf0f1;
+    height: 3px;
+    width: 25px;
+    margin: 3px 0;
+    transition: 0.3s;
+}
+
+/* Menú en vista de escritorio y tablet */
 .navBar {
     list-style: none;
     display: flex;
@@ -21,10 +37,10 @@
 }
 
 .navBar li {
-    margin: 0 20px;
+    margin: 0;
 }
 
-.navBar a {
+.navBar a, .logout-button {
     color: #ecf0f1;
     text-decoration: none;
     font-size: 18px;
@@ -32,9 +48,9 @@
     transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.navBar a:hover {
-  color: #4adb34;
-  transform: scale(1.1);
+.navBar a:hover, .logout-button:hover {
+    color: #4adb34;
+    transform: scale(1.1);
 }
 
 .logout-button {
@@ -53,15 +69,46 @@
     transform: scale(1.05);
 }
 
-/* Media queries para hacer la barra de navegación responsiva */
-@media (max-width: 768px) {
-    .navBar {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .navBar li {
-        margin: 10px 0;
-    }
+/* Menú en vista móvil */
+.navBar.open {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #090909;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Asegura que el menú esté sobre otros elementos */
 }
 
+.navBar.open li {
+    margin: 10px 0;
+}
+
+.close-menu {
+    background: none;
+    border: none;
+    color: #ecf0f1;
+    font-size: 24px;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}
+
+/* Media queries para hacer la barra de navegación responsiva */
+@media (max-width: 768px) {
+    .menu-icon {
+        display: flex;
+    }
+
+    .navBar {
+        display: none;
+    }
+
+    .navBar.open {
+        display: flex;
+    }
+}

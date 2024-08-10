@@ -6,6 +6,7 @@ import './Navbar.css';
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false); // Estado para controlar el menú
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,28 +25,27 @@ const Navbar = () => {
     }
   };
 
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <nav className="navbar">
-      <ul className="navBar">
-        <li>
-          <Link to="/">Inicio</Link>
-        </li>
+      <div className="menu-icon" onClick={toggleMenu}>
+        <span className="icon-bar"></span>
+        <span className="icon-bar"></span>
+        <span className="icon-bar"></span>
+      </div>
+      <ul className={`navBar ${menuOpen ? 'open' : ''}`}>
+        <li><Link to="/" onClick={closeMenu}>Inicio</Link></li>
         {user ? (
           <>
-            <li>
-              <Link to="/upload">Subir Producto</Link>
-            </li>
-            <li>
-              <Link to="/read">Leer Productos</Link>
-            </li>
-            <li>
-              <Link to="/edit">Editar Producto</Link>
-            </li>
-            <li>
-              <button onClick={handleLogout} className="logout-button">Cerrar Sesión</button>
-            </li>
+            <li><Link to="/upload" onClick={closeMenu}>Subir Producto</Link></li>
+            <li><Link to="/read" onClick={closeMenu}>Leer Productos</Link></li>
+            <li><Link to="/edit" onClick={closeMenu}>Editar Producto</Link></li>
+            <li><button onClick={handleLogout} className="logout-button">Cerrar Sesión</button></li>
           </>
         ) : null}
+        {menuOpen && <li><button className="close-menu" onClick={closeMenu}>✖</button></li>}
       </ul>
     </nav>
   );
