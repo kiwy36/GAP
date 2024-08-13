@@ -23,10 +23,14 @@ const UploadProduct = () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProduct((prev) => ({ ...prev, [name]: value }));
+        const formattedValue = name === 'nombre' ? capitalizeFirstLetter(value) : value;
+        setProduct((prev) => ({ ...prev, [name]: formattedValue }));
     };
 
     const handleSubmit = async (e) => {
