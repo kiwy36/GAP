@@ -73,6 +73,10 @@ const ReadProducts = () => {
         fetchProducts();
     };
 
+    const handleCancel = () => {
+        setProductToEdit(null);
+    };
+
     if (!user) {
         return <p>Por favor, inicie sesión para ver los productos.</p>;
     }
@@ -82,7 +86,7 @@ const ReadProducts = () => {
             <h2>Lista de Productos</h2>
             <FilterProducts onFilter={handleFilter} />
             {productToEdit ? (
-                <EditProduct product={productToEdit} onProductUpdate={handleProductUpdate} />
+                <EditProduct product={productToEdit} onProductUpdate={handleProductUpdate} onCancel={handleCancel} />
             ) : (
                 <>
                     {filteredProducts.length === 0 ? (
@@ -97,7 +101,7 @@ const ReadProducts = () => {
                                     <p><strong>Precio:</strong> ${product.precio}</p>
                                     <p><strong>Stock:</strong> {product.stock}</p>
                                     <p><strong>Observaciones:</strong> {product.observaciones}</p>
-                                    <button onClick={() => handleEdit(product)}>Editar</button>
+                                    <button  className="submit-button" onClick={() => handleEdit(product)}>Editar</button>
                                 </div>
                             ))}
                         </div>

@@ -13,7 +13,7 @@ const categories = [
     "Varios", "Verdulería", "Vinos",
 ];
 
-const EditProduct = ({ product, onProductUpdate, }) => {
+const EditProduct = ({ product, onProductUpdate, onCancel }) => {
     const [localProduct, setLocalProduct] = useState(product);
 
     useEffect(() => {
@@ -57,6 +57,7 @@ const EditProduct = ({ product, onProductUpdate, }) => {
     return (
         <div className="edit-product">
             <form onSubmit={handleSubmit}>
+                {/* Campos del formulario aquí */}
                 <input
                     name="nombre"
                     placeholder="Nombre"
@@ -105,7 +106,10 @@ const EditProduct = ({ product, onProductUpdate, }) => {
                     onChange={handleChange}
                     maxLength={30}
                 />
-                <button type="submit">Actualizar Producto</button>
+                <div className="button-group">
+                    <button type="button" className="cancel-button" onClick={onCancel}>Cancelar Actualización</button>
+                    <button type="submit" className="submit-button">Actualizar Producto</button>
+                </div>
             </form>
         </div>
     );

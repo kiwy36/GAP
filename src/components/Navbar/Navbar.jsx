@@ -41,7 +41,6 @@ const Navbar = () => {
           <>
             <li><Link to="/upload" onClick={closeMenu}>Subir Producto</Link></li>
             <li><Link to="/read" onClick={closeMenu}>Leer Productos</Link></li>
-            <li><Link to="/edit" onClick={closeMenu}>Editar Producto</Link></li>
             <li><button onClick={handleLogout} className="logout-button">Cerrar Sesión</button></li>
           </>
         ) : null}
