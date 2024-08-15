@@ -1,16 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import Swal from 'sweetalert2';
 import './UploadProduct.css';
-
-const categories = [
-    "Agua", "Alcohol varios", "Caramelera", "Carbón", "Cervezas", "Cigarrillos", "Comidas hechas",
-    "Conservas", "Despensa", "Dulces", "Energizante", "Fiambrería", "Galletitas", "Gaseosas", "Hamburguesas",
-    "Heladería", "Jugos", "Hielo", "Leña", "Licores", "Lácteos", "Limpieza", "Panificados", "Pastas",
-    "Pepeleria", "Regalaría", "Salchichas", "Snacks salados", "Sodas", "Sueltos", "Tabaco", "Tecnología",
-    "Varios", "Verdulería", "Vinos",
-];
 
 const UploadProduct = () => {
     const [product, setProduct] = useState({
@@ -22,7 +14,24 @@ const UploadProduct = () => {
         observaciones: '',
     });
 
+    const [categories, setCategories] = useState([]);
+    const [newCategory, setNewCategory] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Función para cargar las categorías personalizadas desde Firestore
+    const loadCategories = async () => {
+        const querySnapshot = await getDocs(collection(db, 'UserCategories'));
+        const loadedCategories = querySnapshot.docs
+            .map(doc => doc.data().name)
+            .sort((a, b) => a.localeCompare(b)); // Ordenar alfabéticamente
+
+        setCategories(loadedCategories);
+    };
+
+    useEffect(() => {
+        loadCategories(); // Cargar las categorías al montar el componente
+    }, []);
+
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
@@ -33,11 +42,43 @@ const UploadProduct = () => {
         setProduct((prev) => ({ ...prev, [name]: formattedValue }));
     };
 
+    const handleNewCategoryChange = (e) => {
+        setNewCategory(e.target.value);
+    };
+
+    const handleAddCategory = async () => {
+        if (newCategory.trim() === '') {
+            Swal.fire({
+                title: 'Error',
+                text: 'La categoría no puede estar vacía.',
+                icon: 'error',
+            });
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, 'UserCategories'), { name: capitalizeFirstLetter(newCategory) });
+            setNewCategory('');
+            loadCategories(); // Recargar las categorías después de agregar una nueva
+            Swal.fire({
+                title: 'Éxito',
+                text: 'Categoría añadida con éxito',
+                icon: 'success',
+            });
+        } catch (error) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Error al agregar la categoría. Inténtelo de nuevo.',
+                icon: 'error',
+            });
+            console.error('Error al agregar la categoría:', error);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            // Check if the product code already exists
             const q = query(collection(db, 'Productos'), where('codigo', '==', product.codigo));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
@@ -50,7 +91,6 @@ const UploadProduct = () => {
                 return;
             }
 
-            // Add the new product to the collection
             await addDoc(collection(db, 'Productos'), product);
             Swal.fire({
                 title: 'Éxito',
@@ -113,6 +153,17 @@ const UploadProduct = () => {
                     <option key={index} value={category}>{category}</option>
                 ))}
             </select>
+
+            <div className="new-category-container">
+                <input
+                    type="text"
+                    placeholder="Nueva categoría"
+                    value={newCategory}
+                    onChange={handleNewCategoryChange}
+                />
+                <button type="button" onClick={handleAddCategory}>Añadir Categoría</button>
+            </div>
+
             <input
                 name="stock"
                 placeholder="Stock"

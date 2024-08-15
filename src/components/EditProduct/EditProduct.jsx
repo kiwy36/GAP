@@ -1,23 +1,27 @@
 import { useState, useEffect } from 'react';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import Swal from 'sweetalert2';
 import './EditProduct.css';
 import PropTypes from 'prop-types';
 
-const categories = [
-    "Agua", "Alcohol varios", "Caramelera", "Carbón", "Cervezas", "Cigarrillos", "Comidas hechas",
-    "Conservas", "Despensa", "Dulces", "Energizante", "Fiambrería", "Galletitas", "Gaseosas", "Hamburguesas",
-    "Heladería", "Jugos", "Hielo", "Leña", "Licores", "Lácteos", "Limpieza", "Panificados", "Pastas",
-    "Pepeleria", "Regalaría", "Salchichas", "Snacks salados", "Sodas", "Sueltos", "Tabaco", "Tecnología",
-    "Varios", "Verdulería", "Vinos",
-];
-
 const EditProduct = ({ product, onProductUpdate, onCancel }) => {
     const [localProduct, setLocalProduct] = useState(product);
+    const [categories, setCategories] = useState([]);
+
+    // Cargar las categorías desde Firebase y ordenarlas alfabéticamente
+    const loadCategories = async () => {
+        const querySnapshot = await getDocs(collection(db, 'UserCategories'));
+        const loadedCategories = querySnapshot.docs
+            .map(doc => doc.data().name)
+            .sort((a, b) => a.localeCompare(b)); // Ordenar alfabéticamente
+
+        setCategories(loadedCategories);
+    };
 
     useEffect(() => {
         setLocalProduct(product);
+        loadCategories(); // Cargar las categorías al montar el componente
     }, [product]);
 
     const handleChange = (e) => {

@@ -1,19 +1,28 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../services/firebase.js';
 import './FilterProducts.css';
-
-const categories = [
-    "Agua", "Alcohol varios", "Caramelera", "Carbón", "Cervezas", "Cigarrillos", "Comidas hechas",
-    "Conservas", "Despensa", "Dulces", "Energizante", "Fiambrería", "Galletitas", "Gaseosas", "Hamburguesas",
-    "Heladería", "Heladería", "Jugos", "Hielo", "Leña", "Licores", "Lácteos", "Limpieza", "Panificados", "Pastas",
-    "Pepeleria", "Regalaría", "Salchichas", "Snacks salados", "Sodas", "Sueltos", "Tabaco", "Tecnología",
-    "Varios", "Verdulería", "Vinos",
-];
 
 const FilterProducts = ({ onFilter }) => {
     const [name, setName] = useState('');
     const [barcode, setBarcode] = useState('');
     const [category, setCategory] = useState('');
+    const [categories, setCategories] = useState([]);
+
+    // Cargar las categorías desde Firebase y ordenarlas alfabéticamente
+    const loadCategories = async () => {
+        const querySnapshot = await getDocs(collection(db, 'UserCategories'));
+        const loadedCategories = querySnapshot.docs
+            .map(doc => doc.data().name)
+            .sort((a, b) => a.localeCompare(b)); // Ordenar alfabéticamente
+
+        setCategories(loadedCategories);
+    };
+
+    useEffect(() => {
+        loadCategories(); // Cargar las categorías al montar el componente
+    }, []);
 
     const handleFilter = useCallback(() => {
         onFilter({ name, barcode, category });
