@@ -1,3 +1,4 @@
+/* Navbar base */
 .navbar {
     background-color: #090909;
     padding: 15px 20px;
@@ -87,15 +88,17 @@
     margin: 10px 0;
 }
 
-.close-menu {
+/* Cerrar menú (solo en vista móvil) */
+.close-menu-mobile {
     background: none;
-    border: none;
     color: #ecf0f1;
-    font-size: 24px;
+    font-size: 18px;
     cursor: pointer;
-    position: absolute;
-    top: 15px;
-    right: 20px;
+    padding: 10px;
+    border: none;
+    text-align: center;
+    width: 100%;
+    border-top: 1px solid #ecf0f1; /* Opcional: línea separadora */
 }
 
 /* Media queries para hacer la barra de navegación responsiva */
@@ -110,5 +113,9 @@
 
     .navBar.open {
         display: flex;
+    }
+
+    .close-menu-mobile {
+        display: block; /* Asegura que solo se muestre en vista móvil */
     }
 }

@@ -7,6 +7,8 @@ import UploadProduct from '../src/components/UploadProduct/UploadProduct';
 import ReadProducts from '../src/components/ReadProducts/ReadProducts';
 import Register from '../src/components/Register/Register';
 import Login from '../src/components/Login/Login';
+import Store from '../src/components/Store/Store';
+import Statistics from '../src/components/Statistics/Statistics';
 import './Root.css'
 function Root() {
     return (
@@ -19,6 +21,8 @@ function Root() {
             <Route path="/read" element={<ReadProducts />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/store" element={<Store />} />
+            <Route path="/statistics" element={<Statistics />} />
           </Routes>
         </main>
         <Footer />
