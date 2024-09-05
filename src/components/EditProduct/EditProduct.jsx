@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { doc, updateDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, updateDoc, collection, getDocs ,getDoc} from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import Swal from 'sweetalert2';
 import './EditProduct.css';
 import PropTypes from 'prop-types';
 
+const VERSION_ID = '1234';
+
 const EditProduct = ({ product, onProductUpdate, onCancel }) => {
     const [localProduct, setLocalProduct] = useState(product);
     const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // Cargar las categorías desde Firebase y ordenarlas alfabéticamente
     const loadCategories = async () => {
@@ -29,32 +32,41 @@ const EditProduct = ({ product, onProductUpdate, onCancel }) => {
         setLocalProduct((prev) => ({ ...prev, [name]: value }));
     };
 
+
+    const updateVersion = async () => {
+        const versionDocRef = doc(db, 'Versiones', VERSION_ID);
+        const versionSnapshot = await getDoc(versionDocRef);
+        const currentVersion = versionSnapshot.data()?.version;
+
+        if (currentVersion !== undefined) {
+            await updateDoc(versionDocRef, { version: currentVersion + 1 });
+            localStorage.setItem('version', currentVersion + 1);
+        }
+    };
+
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!localProduct || !localProduct.id) {
-            Swal.fire({
-                title: 'Error',
-                text: 'Debe buscar un producto antes de actualizar',
-                icon: 'error',
-            });
-            return;
-        }
+        setLoading(true);
+
         try {
-            const docRef = doc(db, 'Productos', localProduct.id);
-            await updateDoc(docRef, localProduct);
+            await updateDoc(doc(db, 'Productos', localProduct.id), localProduct);
+            await updateVersion();
             Swal.fire({
                 title: 'Éxito',
                 text: 'Producto actualizado con éxito',
                 icon: 'success',
             });
-            onProductUpdate(); // Llama a la función para actualizar la lista de productos
+            onProductUpdate();
         } catch (error) {
-            console.error('Error al actualizar el producto:', error);
             Swal.fire({
                 title: 'Error',
-                text: 'Ocurrió un error al actualizar el producto',
+                text: 'Error al actualizar el producto. Inténtelo de nuevo.',
                 icon: 'error',
             });
+            console.error('Error al actualizar el producto:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -112,7 +124,9 @@ const EditProduct = ({ product, onProductUpdate, onCancel }) => {
                 />
                 <div className="button-group">
                     <button type="button" className="cancel-button" onClick={onCancel}>Cancelar Actualización</button>
-                    <button type="submit" className="submit-button">Actualizar Producto</button>
+                <button className="submit-button" type="submit" disabled={loading}>
+                    {loading ? 'Actualizando...' : 'Actualizar Producto'}
+                </button>
                 </div>
             </form>
         </div>

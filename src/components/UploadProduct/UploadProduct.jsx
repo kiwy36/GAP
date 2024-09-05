@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import Swal from 'sweetalert2';
 import './UploadProduct.css';
 
+const VERSION_ID = '1234'; // ID del documento en la colección Versione
 const UploadProduct = () => {
     const [product, setProduct] = useState({
         nombre: '',
@@ -75,46 +76,57 @@ const UploadProduct = () => {
         }
     };
 
+    const updateVersion = async () => {
+        const versionDocRef = doc(db, 'Versiones', VERSION_ID);
+        const versionSnapshot = await getDoc(versionDocRef);
+        const currentVersion = versionSnapshot.data()?.version;
+
+        if (currentVersion !== undefined) {
+            await updateDoc(versionDocRef, { version: currentVersion + 1 });
+            localStorage.setItem('version', currentVersion + 1);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        try {
-            const q = query(collection(db, 'Productos'), where('codigo', '==', product.codigo));
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) {
+
+        const q = query(collection(db, 'Productos'), where('codigo', '==', product.codigo));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            try {
+                await addDoc(collection(db, 'Productos'), product);
+                await updateVersion();
                 Swal.fire({
-                    title: 'Código ya existente',
-                    text: 'El código de barra ya está registrado. Por favor, ingrese otro código.',
+                    title: 'Éxito',
+                    text: 'Producto subido con éxito',
+                    icon: 'success',
+                });
+                setProduct({
+                    nombre: '',
+                    codigo: '',
+                    precio: '',
+                    categoria: '',
+                    stock: '',
+                    observaciones: '',
+                });
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al subir el producto. Inténtelo de nuevo.',
                     icon: 'error',
                 });
-                setLoading(false);
-                return;
+                console.error('Error al subir el producto:', error);
             }
-
-            await addDoc(collection(db, 'Productos'), product);
-            Swal.fire({
-                title: 'Éxito',
-                text: 'Producto subido con éxito',
-                icon: 'success',
-            });
-            setProduct({
-                nombre: '',
-                codigo: '',
-                precio: '',
-                categoria: '',
-                stock: '',
-                observaciones: '',
-            });
-        } catch (error) {
+        } else {
             Swal.fire({
                 title: 'Error',
-                text: 'Error al subir el producto. Inténtelo de nuevo.',
+                text: 'Ya existe un producto con ese código.',
                 icon: 'error',
             });
-            console.error('Error al subir el producto:', error);
-        } finally {
-            setLoading(false);
         }
+        setLoading(false);
     };
 
     return (
