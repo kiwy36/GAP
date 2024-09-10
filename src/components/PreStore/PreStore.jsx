@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types'; // Importar PropTypes
+import './PreStore.css';
 
 const PreStore = ({ product, onClose, onConfirm }) => {
     const [quantity, setQuantity] = useState(1);
-    const [observations, setObservations] = useState('');
+    const [observations, setObservations] = useState(''); // Corregido observaciones
 
     const handleConfirm = () => {
         const subtotal = quantity * product.precio;
@@ -11,10 +12,10 @@ const PreStore = ({ product, onClose, onConfirm }) => {
             nombre: product.nombre,
             cantidad: quantity,
             subtotal,
-            observaciones: observations
+            observaciones: observations // Corregido observaciones
         };
-        onConfirm(soldProduct);
-        onClose();
+        onConfirm(soldProduct); // Envía los datos al componente Store
+        onClose(); // Cierra PreStore
     };
 
     return (
@@ -31,6 +32,7 @@ const PreStore = ({ product, onClose, onConfirm }) => {
                     max={product.stock} 
                 />
             </label>
+            <br/>
             <label>
                 Observaciones:
                 <input 
@@ -40,8 +42,8 @@ const PreStore = ({ product, onClose, onConfirm }) => {
                 />
             </label>
             <p><strong>Total:</strong> ${quantity * product.precio}</p>
-            <button onClick={onClose}>Cancelar</button>
-            <button onClick={handleConfirm}>Confirmar</button>
+            <button className='PreStore-cancel' onClick={onClose}>Cancelar</button>
+            <button className='PreStore-confirm' onClick={handleConfirm}>Confirmar</button>
         </div>
     );
 };

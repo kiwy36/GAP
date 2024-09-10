@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import Swal from 'sweetalert2';
 import FilterProducts from '../FilterProducts/FilterProducts.jsx';
 import EditProduct from '../EditProduct/EditProduct.jsx';
+import PreStore from '../PreStore/PreStore.jsx';
 import './ReadProducts.css';
 
 const VERSION_ID = '1234'; // ID del documento en la colección Versiones
@@ -13,6 +14,8 @@ const ReadProducts = () => {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [user, setUser] = useState(null);
     const [productToEdit, setProductToEdit] = useState(null);
+    const [showPreStore, setShowPreStore] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -125,30 +128,24 @@ const ReadProducts = () => {
         }
     };
 
-    const handleAddToCart = (product) => {
+    const handleAddToSold = (product) => {
+        setSelectedProduct(product);
+        setShowPreStore(true);
+    };
+
+    const handleConfirmSold = (soldProduct) => {
         const storedCartProducts = JSON.parse(localStorage.getItem('cartProducts')) || [];
-        const existingProductIndex = storedCartProducts.findIndex(p => p.id === product.id);
-
-        if (existingProductIndex !== -1) {
-            // Si el producto ya está en el carrito, actualizar la cantidad
-            storedCartProducts[existingProductIndex].quantity += 1;
-        } else {
-            // Si el producto no está en el carrito, añadirlo con una cantidad inicial de 1
-            storedCartProducts.push({ ...product, quantity: 1 });
-        }
-
+        storedCartProducts.push(soldProduct);
         localStorage.setItem('cartProducts', JSON.stringify(storedCartProducts));
+        setShowPreStore(false);
 
         Swal.fire({
-            title: 'Producto añadido al carrito',
-            text: `${product.nombre} ha sido añadido al carrito.`,
+            title: 'Producto añadido a Vendidos',
+            text: `${soldProduct.nombre} ha sido añadido con éxito.`,
             icon: 'success',
         });
     };
 
-    if (!user) {
-        return <p>Por favor, inicie sesión para ver los productos.</p>;
-    }
 
     if (!user) {
         return <p>Por favor, inicie sesión para ver los productos.</p>;
@@ -176,12 +173,19 @@ const ReadProducts = () => {
                                     <p><strong>Observaciones:</strong> {product.observaciones}</p>
                                     <button className="submit-button" onClick={() => handleEdit(product)}>Editar</button>
                                     <button className="delete-button" onClick={() => handleDelete(product.id)}>Eliminar</button>
-                                    <button className="cart-button" onClick={() => handleAddToCart(product)}>Añadir a Vendidos</button>
+                                    <button className="cart-button" onClick={() => handleAddToSold(product)}>Añadir a Vendidos</button>
                                 </div>
                             ))}
                         </div>
                     )}
                 </>
+            )}
+            {showPreStore && (
+                <PreStore 
+                    product={selectedProduct} 
+                    onClose={() => setShowPreStore(false)} 
+                    onConfirm={handleConfirmSold} 
+                />
             )}
         </div>
     );

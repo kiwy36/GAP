@@ -1,0 +1,126 @@
+/* Estilo general del modal */
+.prestore-modal {
+    position: fixed;
+    top: 10%; /* Ajuste para que el modal esté a una leve distancia del inicio */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000; /* Asegura que esté sobre todos los elementos */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    animation: slideDown 0.3s ease-out;
+}
+
+/* Animación para que el modal aparezca con una transición */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+/* Fondo oscuro detrás del modal para enfocar la atención */
+.prestore-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* Transparencia para resaltar el modal */
+    z-index: 999;
+}
+
+/* Botones de acción (Confirmar y Cancelar) */
+.prestore-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.prestore-actions button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+/* Estilo de los botones de acción */
+.PreStore-cancel {
+    background-color: #dc3545;
+    color: white;
+}
+
+.PreStore-cancel:hover {
+    background-color: #c82333;
+}
+
+.PreStore-confirm {
+    background-color: #28a745;
+    color: white;
+}
+
+.PreStore-confirm:hover {
+    background-color: #218838;
+}
+
+/* Estilos para las etiquetas y campos de producto */
+.prestore-product {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaciado más amplio para mejor organización */
+}
+
+.prestore-product label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block; /* Asegura que las etiquetas se alineen bien */
+}
+
+.prestore-product input[type="number"],
+.prestore-product input[type="text"] {
+    width: 100%; /* Ambos inputs ocupan el 100% del espacio disponible */
+    padding: 10px 12px; /* Ajuste de padding para mayor comodidad */
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Efecto de transición */
+    box-sizing: border-box; /* Asegura que padding no afecte el ancho */
+}
+
+/* Estilos al enfocar el input */
+.prestore-product input:focus {
+    outline: none; /* Eliminar el borde azul predeterminado */
+    border-color: #007bff; /* Cambiar color de borde al enfocar */
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.25); /* Sombra alrededor del input */
+}
+
+/* Título del modal */
+.prestore-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 600px) {
+    .prestore-modal {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .prestore-actions button {
+        width: 48%;
+    }
+}

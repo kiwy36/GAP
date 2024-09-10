@@ -6,66 +6,74 @@ import './Store.css';
 
 const Store = () => {
     const [cartProducts, setCartProducts] = useState([]);
-    const [cartTotal, setCartTotal] = useState(0);
+    const [totalQuantity, setTotalQuantity] = useState(0);
+    const [totalMoney, setTotalMoney] = useState(0);
 
     useEffect(() => {
-        const storedCartProducts = JSON.parse(localStorage.getItem('cartProducts')) || [];
-        const storedCartTotal = Number(localStorage.getItem('cartTotal')) || 0;
-        setCartProducts(storedCartProducts);
-        setCartTotal(storedCartTotal);
+        const storedCart = JSON.parse(localStorage.getItem('cartProducts')) || [];
+        setCartProducts(storedCart);
+
+        // Calcular totales
+        const totalQty = storedCart.reduce((sum, product) => sum + product.cantidad, 0);
+        const totalAmount = storedCart.reduce((sum, product) => sum + product.subtotal, 0);
+        setTotalQuantity(totalQty);
+        setTotalMoney(totalAmount);
     }, []);
-
-    useEffect(() => {
-        localStorage.setItem('cartProducts', JSON.stringify(cartProducts));
-        localStorage.setItem('cartTotal', cartTotal);
-    }, [cartProducts, cartTotal]);
 
     const handleSendOrder = async () => {
         try {
-            await addDoc(collection(db, 'VentasDiarias'), {
-                productos: cartProducts,
-                total: cartTotal,
-                fecha: new Date(),
-            });
+            const order = {
+                products: cartProducts,
+                totalQuantity,
+                totalMoney,
+                createdAt: new Date(),
+            };
 
-            // Vaciar el carrito después de enviar la comanda
-            setCartProducts([]);
-            setCartTotal(0);
-            localStorage.removeItem('cartProducts');
-            localStorage.removeItem('cartTotal');
+            await addDoc(collection(db, 'Ventas'), order);
 
             Swal.fire({
                 title: 'Comanda enviada',
-                text: 'La comanda se ha enviado y el carrito ha sido vaciado.',
+                text: 'La comanda ha sido enviada correctamente.',
                 icon: 'success',
             });
+
+            // Vaciar el carrito y localStorage después de enviar la comanda
+            setCartProducts([]);
+            setTotalQuantity(0);
+            setTotalMoney(0);
+            localStorage.removeItem('cartProducts');
         } catch (error) {
             Swal.fire({
                 title: 'Error',
-                text: 'Hubo un error al enviar la comanda.',
+                text: 'No se pudo enviar la comanda.',
                 icon: 'error',
             });
-            console.error('Error al mandar comanda:', error);
+            console.error('Error al enviar la comanda:', error);
         }
     };
 
     return (
         <div>
-            <h1>Total vendido: ${cartTotal.toFixed(2)}</h2>
-            {cartProducts.length === 0 ? (
-                <p>No hay productos en el carrito.</p>
-            ) : (
-                <div className="cart-items">
-                    {cartProducts.map((product, index) => (
-                        <div key={index} className="cart-item">
-                            <h3>{product.nombre}</h3>
-                            <p><strong>Cantidad:</strong> {product.quantity}</p>
-                            <p><strong>Total:</strong> ${(product.quantity * product.precio).toFixed(2)}</p>
+            <h2>Total Vendido</h2>
+            <p><strong>Cantidad de productos vendidos:</strong> {totalQuantity}</p>
+            <p><strong>Total de dinero generado:</strong> ${totalMoney}</p>
+            <div className="cart-list">
+                {cartProducts.length === 0 ? (
+                    <p>No hay productos en el carrito.</p>
+                ) : (
+                    cartProducts.map((product, index) => (
+                        <div key={index} className="cart-product">
+                            <p><strong>Producto:</strong> {product.nombre}</p>
+                            <p><strong>Cantidad:</strong> {product.cantidad}</p>
+                            <p><strong>Subtotal:</strong> ${product.subtotal}</p>
+                            {product.observaciones && <p><strong>Observaciones:</strong> {product.observaciones}</p>}
                         </div>
-                    ))}
-                </div>
-            )}
-            <button className="submit-button" onClick={handleSendOrder}>Mandar Comanda</button>
+                    ))
+                )}
+            </div>
+            <button onClick={handleSendOrder} disabled={cartProducts.length === 0}>
+                Mandar Comanda
+            </button>
         </div>
     );
 };
