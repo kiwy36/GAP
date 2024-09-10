@@ -51,7 +51,7 @@ const Store = () => {
 
     return (
         <div>
-            <h2>Total vendido: ${cartTotal.toFixed(2)}</h2>
+            <h1>Total vendido: ${cartTotal.toFixed(2)}</h2>
             {cartProducts.length === 0 ? (
                 <p>No hay productos en el carrito.</p>
             ) : (
