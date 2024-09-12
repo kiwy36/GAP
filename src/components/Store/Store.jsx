@@ -20,6 +20,18 @@ const Store = () => {
         setTotalMoney(totalAmount);
     }, []);
 
+    const handleRemoveProduct = (indexToRemove) => {
+        const updatedCart = cartProducts.filter((_, index) => index !== indexToRemove);
+        setCartProducts(updatedCart);
+        localStorage.setItem('cartProducts', JSON.stringify(updatedCart));
+
+        // Recalcular totales
+        const totalQty = updatedCart.reduce((sum, product) => sum + product.cantidad, 0);
+        const totalAmount = updatedCart.reduce((sum, product) => sum + product.subtotal, 0);
+        setTotalQuantity(totalQty);
+        setTotalMoney(totalAmount);
+    };
+
     const handleSendOrder = async () => {
         try {
             const order = {
@@ -53,13 +65,15 @@ const Store = () => {
     };
 
     return (
-        <div>
-            <h2>Total Vendido</h2>
-            <p><strong>Cantidad de productos vendidos:</strong> {totalQuantity}</p>
-            <p><strong>Total de dinero generado:</strong> ${totalMoney}</p>
+        <div className="store-container">
+            <h2 className="store-title">Resumen de Ventas</h2>
+            <div className="store-summary">
+                <p><strong>Cantidad de productos vendidos:</strong> {totalQuantity}</p>
+                <p><strong>Total de dinero generado:</strong> ${totalMoney}</p>
+            </div>
             <div className="cart-list">
                 {cartProducts.length === 0 ? (
-                    <p>No hay productos en el carrito.</p>
+                    <p className="empty-cart">No hay productos en el carrito.</p>
                 ) : (
                     cartProducts.map((product, index) => (
                         <div key={index} className="cart-product">
@@ -67,11 +81,17 @@ const Store = () => {
                             <p><strong>Cantidad:</strong> {product.cantidad}</p>
                             <p><strong>Subtotal:</strong> ${product.subtotal}</p>
                             {product.observaciones && <p><strong>Observaciones:</strong> {product.observaciones}</p>}
+                            <button 
+                                className="remove-btn"
+                                onClick={() => handleRemoveProduct(index)}
+                            >
+                                Eliminar
+                            </button>
                         </div>
                     ))
                 )}
             </div>
-            <button onClick={handleSendOrder} disabled={cartProducts.length === 0}>
+            <button className="send-order-btn" onClick={handleSendOrder} disabled={cartProducts.length === 0}>
                 Mandar Comanda
             </button>
         </div>

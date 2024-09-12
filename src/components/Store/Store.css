@@ -1,0 +1,117 @@
+/* Contenedor principal */
+.store-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Título principal */
+.store-title {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+/* Resumen de ventas */
+.store-summary {
+    background-color: #007bff;
+    color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    text-align: center;
+    font-size: 18px;
+}
+
+/* Lista de productos en grid */
+.cart-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* Cada producto del carrito */
+.cart-product {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: space-between;
+    text-align: center;
+}
+
+/* Botón para eliminar producto */
+.remove-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.remove-btn:hover {
+    background-color: #c82333;
+}
+
+/* Botón para enviar la comanda */
+.send-order-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background-color: #28a745;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+.send-order-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.send-order-btn:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+/* Carrito vacío */
+.empty-cart {
+    font-size: 18px;
+    color: #888;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .store-container {
+        padding: 10px;
+    }
+
+    .cart-product {
+        padding: 15px;
+    }
+
+    .send-order-btn {
+        font-size: 16px;
+        padding: 12px;
+    }
+}
