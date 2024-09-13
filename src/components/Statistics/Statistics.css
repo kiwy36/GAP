@@ -1,0 +1,24 @@
+.sales-summary, .sales-category, .best-selling-product {
+    margin-bottom: 20px;
+}
+
+.pie-chart {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.pie-chart div {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        #4caf50 var(--percent),
+        #f44336 calc(var(--percent) + 10%)
+    );
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
