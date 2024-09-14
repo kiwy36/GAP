@@ -1,24 +1,139 @@
-.sales-summary, .sales-category, .best-selling-product {
+.statistics-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos generales para la selección de fechas */
+.date-selector {
+    display: flex;
+    justify-content: space-between;
     margin-bottom: 20px;
 }
 
-.pie-chart {
+.date-selector label {
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.date-selector input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+.date-selector button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.date-selector button:hover {
+    background-color: #0056b3;
+}
+
+/* Sumatoria de ventas */
+.sales-summary, .most-sold-product {
     margin-top: 20px;
 }
 
-.pie-chart div {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background: conic-gradient(
-        from 0deg,
-        #4caf50 var(--percent),
-        #f44336 calc(var(--percent) + 10%)
-    );
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
+.sales-summary ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.sales-summary li {
+    padding: 10px;
+    background-color: #fff;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.most-sold-product p {
+    padding: 10px;
+    background-color: #d4edda;
+    border-radius: 4px;
+}
+
+/* Media queries para pantallas pequeñas (móviles) */
+@media (max-width: 768px) {
+  /* Ajustes de contenedor */
+    .statistics-container {
+        padding: 15px;
+        max-width: 100%;
+        box-shadow: none;
+        margin: 0 10px;
+    }
+
+  /* Estilo para los inputs de fecha en columnas */
+    .date-selector {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .date-selector label {
+        font-size: 16px;
+    }
+
+    .date-selector input {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .date-selector button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+
+  /* Ajustes de la lista de ventas */
+    .sales-summary ul {
+        padding: 0;
+    }
+
+    .sales-summary li {
+        padding: 12px;
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+
+    .most-sold-product p {
+        font-size: 16px;
+    }
+}
+
+/* Media query para pantallas extra pequeñas (móviles de menor tamaño) */
+@media (max-width: 480px) {
+    .statistics-container {
+        padding: 10px;
+        margin: 0;
+    }
+
+    .date-selector {
+        gap: 8px;
+    }
+
+    .date-selector button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .sales-summary li {
+        font-size: 14px;
+    }
+
+    .most-sold-product p {
+        font-size: 14px;
+    }
 }

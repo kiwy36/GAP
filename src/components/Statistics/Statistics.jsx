@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import './Statistics.css';
@@ -6,134 +6,105 @@ import './Statistics.css';
 const Statistics = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [totalSales, setTotalSales] = useState([]);
-    const [categorySales, setCategorySales] = useState({});
-    const [bestProduct, setBestProduct] = useState(null);
+    const [salesData, setSalesData] = useState([]);
+    const [mostSoldProduct, setMostSoldProduct] = useState(null);
 
-    // Función para calcular las ventas entre fechas
     const fetchSalesBetweenDates = async () => {
         if (startDate && endDate) {
-            const q = query(
-                collection(db, 'Ventas'),
-                where('createdAt', '>=', new Date(startDate)),
-                where('createdAt', '<=', new Date(endDate))
-            );
-            const querySnapshot = await getDocs(q);
-            const salesData = [];
+        const q = query(
+            collection(db, 'Ventas'),
+            where('createdAt', '>=', new Date(startDate)),
+            where('createdAt', '<=', new Date(endDate))
+        );
 
-            querySnapshot.forEach((doc) => {
-                salesData.push(doc.data());
-            });
-
-            // Calcular la sumatoria de productos y dinero generado
-            const productSummary = {};
-            salesData.forEach((sale) => {
-                sale.products.forEach((product) => {
-                    if (!productSummary[product.nombre]) {
-                        productSummary[product.nombre] = {
-                            cantidad: 0,
-                            total: 0,
-                        };
-                    }
-                    productSummary[product.nombre].cantidad += product.cantidad;
-                    productSummary[product.nombre].total += product.subtotal;
-                });
-            });
-            setTotalSales(productSummary);
-        }
-    };
-
-    // Función para obtener ventas por categoría y mostrar en gráfico de torta
-    const fetchCategorySales = async (date) => {
-        const q = query(collection(db, 'Ventas'), where('createdAt', '==', new Date(date)));
         const querySnapshot = await getDocs(q);
-        const categoryData = {};
-
+        const sales = [];
         querySnapshot.forEach((doc) => {
-            doc.data().products.forEach((product) => {
-                const category = product.categoria || 'Sin categoría';
-                if (!categoryData[category]) {
-                    categoryData[category] = 0;
-                }
-                categoryData[category] += product.cantidad;
-            });
+            sales.push(doc.data());
         });
-        setCategorySales(categoryData);
-    };
 
-    // Función para identificar el producto más vendido entre fechas
-    const fetchBestSellingProduct = async () => {
-        if (startDate && endDate) {
-            const q = query(
-                collection(db, 'Ventas'),
-                where('createdAt', '>=', new Date(startDate)),
-                where('createdAt', '<=', new Date(endDate))
-            );
-            const querySnapshot = await getDocs(q);
-            const productSales = {};
-
-            querySnapshot.forEach((doc) => {
-                doc.data().products.forEach((product) => {
-                    if (!productSales[product.nombre]) {
-                        productSales[product.nombre] = 0;
-                    }
-                    productSales[product.nombre] += product.cantidad;
-                });
-            });
-
-            const bestProduct = Object.keys(productSales).reduce((a, b) =>
-                productSales[a] > productSales[b] ? a : b
-            );
-            setBestProduct(bestProduct);
+        // Procesar datos de ventas
+        processSalesData(sales);
         }
     };
 
-    useEffect(() => {
-        fetchSalesBetweenDates();
-        fetchBestSellingProduct();
-    }, [startDate, endDate]);
+    const processSalesData = (sales) => {
+        const total = {};
+        sales.forEach((sale) => {
+        sale.products.forEach((product) => {
+            if (!total[product.nombre]) {
+            total[product.nombre] = { quantity: 0, subtotal: 0 };
+            }
+            total[product.nombre].quantity += product.cantidad;
+            total[product.nombre].subtotal += product.subtotal;
+        });
+        });
+
+        const totalSalesArray = Object.keys(total).map((key) => ({
+        name: key,
+        quantity: total[key].quantity,
+        subtotal: total[key].subtotal,
+        }));
+
+        setSalesData(totalSalesArray);
+
+        // Encontrar el producto más vendido
+        const mostSold = totalSalesArray.reduce((prev, current) =>
+        current.quantity > prev.quantity ? current : prev,
+        { name: '', quantity: 0 }
+        );
+        setMostSoldProduct(mostSold);
+    };
 
     return (
-        <div>
-            <h2>Estadísticas de Ventas</h2>
+        <div className="statistics-container">
+        <h2>Estadísticas de Ventas</h2>
+        <div className="date-selector">
+            <label>
+            Fecha de inicio:
+            <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+            />
+            </label>
+            <label>
+            Fecha de fin:
+            <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+            />
+            </label>
+            <button onClick={fetchSalesBetweenDates}>Obtener Estadísticas</button>
+        </div>
 
-            {/* Sumatoria de ventas entre fechas */}
-            <div className="sales-summary">
-                <h3>Sumatoria de ventas entre fechas</h3>
-                <label>Fecha de inicio:</label>
-                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                <label>Fecha de fin:</label>
-                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                <button onClick={fetchSalesBetweenDates}>Ver Resumen</button>
+        <div className="sales-summary">
+            <h3>Sumatoria de Ventas</h3>
+            {salesData.length > 0 ? (
+            <ul>
+                {salesData.map((product, index) => (
+                <li key={index}>
+                    <strong>{product.name}</strong>: {product.quantity} unidades
+                    vendidas - Total: ${product.subtotal}
+                </li>
+                ))}
+            </ul>
+            ) : (
+            <p>No se encontraron ventas en el periodo seleccionado.</p>
+            )}
+        </div>
 
-                <ul>
-                    {Object.keys(totalSales).map((product) => (
-                        <li key={product}>
-                            {product}: {totalSales[product].cantidad} vendidos, ${totalSales[product].total} generados
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            {/* Ventas por categoría (gráfico de torta simple) */}
-            <div className="sales-category">
-                <h3>Ventas diarias por categoría</h3>
-                <label>Seleccionar fecha:</label>
-                <input type="date" onChange={(e) => fetchCategorySales(e.target.value)} />
-                <div className="pie-chart">
-                    {Object.keys(categorySales).map((category) => (
-                        <div key={category} style={{ '--percent': categorySales[category] }}>
-                            {category}: {categorySales[category]} vendidos
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Producto más vendido entre fechas */}
-            <div className="best-selling-product">
-                <h3>Producto más vendido</h3>
-                <p>{bestProduct ? bestProduct : 'No hay datos'}</p>
-            </div>
+        <div className="most-sold-product">
+            <h3>Producto más vendido</h3>
+            {mostSoldProduct ? (
+            <p>
+                <strong>{mostSoldProduct.name}</strong> con {mostSoldProduct.quantity} unidades vendidas.
+            </p>
+            ) : (
+            <p>No hay datos de ventas.</p>
+            )}
+        </div>
         </div>
     );
 };
