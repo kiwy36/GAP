@@ -59,52 +59,52 @@ const Statistics = () => {
     return (
         <div className="statistics-container">
         <h2>Estadísticas de Ventas</h2>
-        <div className="date-selector">
-            <label>
-            Fecha de inicio:
-            <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-            />
-            </label>
-            <label>
-            Fecha de fin:
-            <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-            />
-            </label>
-            <button onClick={fetchSalesBetweenDates}>Obtener Estadísticas</button>
-        </div>
+            <div className="date-selector">
+                <label>
+                Fecha de inicio:
+                <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                />
+                </label>
+                <label>
+                Fecha de fin:
+                <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                />
+                </label>
+                <button onClick={fetchSalesBetweenDates}>Obtener Estadísticas</button>
+            </div>
 
-        <div className="sales-summary">
-            <h3>Sumatoria de Ventas</h3>
-            {salesData.length > 0 ? (
-            <ul>
-                {salesData.map((product, index) => (
-                <li key={index}>
-                    <strong>{product.name}</strong>: {product.quantity} unidades
-                    vendidas - Total: ${product.subtotal}
-                </li>
-                ))}
-            </ul>
-            ) : (
-            <p>No se encontraron ventas en el periodo seleccionado.</p>
-            )}
-        </div>
+            <div className="sales-summary">
+                <h3>Sumatoria de Ventas</h3>
+                {salesData.length > 0 ? (
+                <ul>
+                    {salesData.map((product, index) => (
+                    <li key={index}>
+                        <strong>{product.name}</strong>: {product.quantity} unidades
+                        vendidas - Total: ${product.subtotal}
+                    </li>
+                    ))}
+                </ul>
+                ) : (
+                <p>No se encontraron ventas en el periodo seleccionado.</p>
+                )}
+            </div>
 
-        <div className="most-sold-product">
-            <h3>Producto más vendido</h3>
-            {mostSoldProduct ? (
-            <p>
-                <strong>{mostSoldProduct.name}</strong> con {mostSoldProduct.quantity} unidades vendidas.
-            </p>
-            ) : (
-            <p>No hay datos de ventas.</p>
-            )}
-        </div>
+            <div className="most-sold-product">
+                <h3>Producto más vendido</h3>
+                {mostSoldProduct ? (
+                <p>
+                    <strong>{mostSoldProduct.name}</strong> con {mostSoldProduct.quantity} unidades vendidas.
+                </p>
+                ) : (
+                <p>No hay datos de ventas.</p>
+                )}
+            </div>
         </div>
     );
 };
