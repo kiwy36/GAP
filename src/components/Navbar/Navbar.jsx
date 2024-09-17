@@ -40,8 +40,8 @@ const Navbar = () => {
         {user ? (
           <>
             <li><Link to="/upload" onClick={closeMenu}>Subir Producto</Link></li>
-            <li><Link to="/read" onClick={closeMenu}>Leer Productos</Link></li>
-            <li><Link to="/store" onClick={closeMenu}>Gestor de salida</Link></li>
+            <li><Link to="/read" onClick={closeMenu}>Productos</Link></li>
+            <li><Link to="/store" onClick={closeMenu}>Ventas</Link></li>
             <li><Link to="/statistics" onClick={closeMenu}>Estadísticas</Link></li>
             <li><button onClick={handleLogout} className="logout-button">Cerrar Sesión</button></li>
           </>

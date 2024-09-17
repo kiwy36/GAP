@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { collection, getDocs, getDoc, doc,deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '../../services/firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
 import Swal from 'sweetalert2';
@@ -9,6 +9,7 @@ import PreStore from '../PreStore/PreStore.jsx';
 import './ReadProducts.css';
 
 const VERSION_ID = '1234'; // ID del documento en la colección Versiones
+
 const ReadProducts = () => {
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -16,6 +17,8 @@ const ReadProducts = () => {
     const [productToEdit, setProductToEdit] = useState(null);
     const [showPreStore, setShowPreStore] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [loading, setLoading] = useState(true); // Estado de carga
+    const [error, setError] = useState(null); // Estado de error
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -27,6 +30,9 @@ const ReadProducts = () => {
     useEffect(() => {
         if (user) {
             const fetchProducts = async () => {
+                setLoading(true); // Inicia la carga
+                setError(null); // Reiniciar el error
+
                 try {
                     const versionDoc = await getDoc(doc(db, 'Versiones', VERSION_ID));
                     const firebaseVersion = versionDoc.data()?.version;
@@ -40,6 +46,7 @@ const ReadProducts = () => {
                         if (storedProducts) {
                             setProducts(storedProducts);
                             setFilteredProducts(storedProducts);
+                            setLoading(false); // Finaliza la carga
                             return;
                         }
                     }
@@ -57,8 +64,11 @@ const ReadProducts = () => {
                     setFilteredProducts(productsList);
                     localStorage.setItem('products', JSON.stringify(productsList));
                     localStorage.setItem('version', firebaseVersion);
+                    setLoading(false); // Finaliza la carga
                 } catch (error) {
                     console.error('Error al leer productos:', error);
+                    setError('No se pudieron cargar los productos.'); // Registrar el error
+                    setLoading(false); // Finaliza la carga
                 }
             };
 
@@ -81,8 +91,7 @@ const ReadProducts = () => {
     };
 
     const handleProductUpdate = () => {
-        setProductToEdit(null); // Close the edit form
-        // Re-fetch products to ensure the list is up to date
+        setProductToEdit(null); // Cierra el formulario de edición
         const fetchProducts = async () => {
             try {
                 const querySnapshot = await getDocs(collection(db, 'Productos'));
@@ -102,12 +111,11 @@ const ReadProducts = () => {
     const handleCancel = () => {
         setProductToEdit(null);
     };
+
     const handleDelete = async (productId) => {
         try {
-            // Eliminar de Firebase
             await deleteDoc(doc(db, 'Productos', productId));
 
-            // Actualizar el localStorage
             const updatedProducts = products.filter(product => product.id !== productId);
             setProducts(updatedProducts);
             setFilteredProducts(updatedProducts);
@@ -146,7 +154,6 @@ const ReadProducts = () => {
         });
     };
 
-
     if (!user) {
         return <p>Por favor, inicie sesión para ver los productos.</p>;
     }
@@ -159,8 +166,13 @@ const ReadProducts = () => {
                 <EditProduct product={productToEdit} onProductUpdate={handleProductUpdate} onCancel={handleCancel} />
             ) : (
                 <>
-                    {filteredProducts.length === 0 ? (
-                        <p>No hay productos disponibles.</p>
+                    {loading ? (
+                        <div className="spinner"></div>
+                        // { /* Spinner mientras carga */ } //
+                    ) : error ? (
+                        <p>{error}</p> // {/* Mensaje de error si falla la carga */}
+                    ) : filteredProducts.length === 0 ? (
+                        <p>No hay productos disponibles.</p> // {/* Mostrar solo si no hay productos */}
                     ) : (
                         <div className="products-grid">
                             {filteredProducts.map((product) => (
@@ -171,9 +183,11 @@ const ReadProducts = () => {
                                     <p><strong>Precio:</strong> ${product.precio}</p>
                                     <p><strong>Stock:</strong> {product.stock}</p>
                                     <p><strong>Observaciones:</strong> {product.observaciones}</p>
-                                    <button className="submit-button" onClick={() => handleEdit(product)}>Editar</button>
-                                    <button className="delete-button" onClick={() => handleDelete(product.id)}>Eliminar</button>
-                                    <button className="cart-button" onClick={() => handleAddToSold(product)}>Añadir a Vendidos</button>
+                                    <div className="button-container">
+                                        <button className="edit-button" onClick={() => handleEdit(product)}>Editar</button>
+                                        <button className="delete-button" onClick={() => handleDelete(product.id)}>Eliminar</button>
+                                        <button className="cart-button" onClick={() => handleAddToSold(product)}>Vendido</button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -181,10 +195,10 @@ const ReadProducts = () => {
                 </>
             )}
             {showPreStore && (
-                <PreStore 
-                    product={selectedProduct} 
-                    onClose={() => setShowPreStore(false)} 
-                    onConfirm={handleConfirmSold} 
+                <PreStore
+                    product={selectedProduct}
+                    onClose={() => setShowPreStore(false)}
+                    onConfirm={handleConfirmSold}
                 />
             )}
         </div>
