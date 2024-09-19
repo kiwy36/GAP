@@ -56,11 +56,13 @@ const UploadProduct = () => {
             });
             return;
         }
-
+    
         try {
             await addDoc(collection(db, 'UserCategories'), { name: capitalizeFirstLetter(newCategory) });
             setNewCategory('');
-            loadCategories(); // Recargar las categorías después de agregar una nueva
+    
+            // Recargar las categorías después de añadir la nueva
+            await loadCategories(); // Espera a que las categorías se recarguen completamente
             Swal.fire({
                 title: 'Éxito',
                 text: 'Categoría añadida con éxito',
@@ -75,6 +77,7 @@ const UploadProduct = () => {
             console.error('Error al agregar la categoría:', error);
         }
     };
+    
 
     const updateVersion = async () => {
         const versionDocRef = doc(db, 'Versiones', VERSION_ID);
@@ -165,7 +168,6 @@ const UploadProduct = () => {
                     <option key={index} value={category}>{category}</option>
                 ))}
             </select>
-
             <div className="new-category-container">
                 <input
                     type="text"
