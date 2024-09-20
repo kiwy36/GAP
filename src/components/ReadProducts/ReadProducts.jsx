@@ -30,51 +30,58 @@ const ReadProducts = () => {
     useEffect(() => {
         if (user) {
             const fetchProducts = async () => {
-                setLoading(true); // Inicia la carga
-                setError(null); // Reiniciar el error
-
+                setLoading(true);
+                setError(null);
+    
                 try {
                     const versionDoc = await getDoc(doc(db, 'Versiones', VERSION_ID));
                     const firebaseVersion = versionDoc.data()?.version;
                     const localVersion = localStorage.getItem('version');
-
+    
                     console.log(`Versión vigente en Firebase: ${firebaseVersion}`);
-
+    
+                    // Verificar si la versión ha cambiado
                     if (localVersion && firebaseVersion === Number(localVersion)) {
                         console.log('Usando productos desde localStorage');
                         const storedProducts = JSON.parse(localStorage.getItem('products'));
                         if (storedProducts) {
                             setProducts(storedProducts);
                             setFilteredProducts(storedProducts);
-                            setLoading(false); // Finaliza la carga
+                            setLoading(false);
                             return;
                         }
+                    } else {
+                        console.log('La versión ha cambiado, cargando productos desde Firebase');
+                        localStorage.removeItem('products'); // Limpiar localStorage si la versión cambió
                     }
-
+    
+                    // Cargar productos desde Firebase
                     const querySnapshot = await getDocs(collection(db, 'Productos'));
                     const productsList = querySnapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data(),
                     }));
-
+    
                     const dataSize = new TextEncoder().encode(JSON.stringify(productsList)).length / 1024;
                     console.log(`Consumo de datos: ${dataSize.toFixed(2)} KB`);
-
+    
+                    // Guardar productos y nueva versión en localStorage
                     setProducts(productsList);
                     setFilteredProducts(productsList);
                     localStorage.setItem('products', JSON.stringify(productsList));
                     localStorage.setItem('version', firebaseVersion);
-                    setLoading(false); // Finaliza la carga
+                    setLoading(false);
                 } catch (error) {
                     console.error('Error al leer productos:', error);
-                    setError('No se pudieron cargar los productos.'); // Registrar el error
-                    setLoading(false); // Finaliza la carga
+                    setError('No se pudieron cargar los productos.');
+                    setLoading(false);
                 }
             };
-
+    
             fetchProducts();
         }
     }, [user]);
+    
 
     const handleFilter = useCallback((filters) => {
         const { name, barcode, category } = filters;

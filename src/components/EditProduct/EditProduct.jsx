@@ -31,8 +31,6 @@ const EditProduct = ({ product, onProductUpdate, onCancel }) => {
         const { name, value } = e.target;
         setLocalProduct((prev) => ({ ...prev, [name]: value }));
     };
-
-
     const updateVersion = async () => {
         const versionDocRef = doc(db, 'Versiones', VERSION_ID);
         const versionSnapshot = await getDoc(versionDocRef);
@@ -40,10 +38,12 @@ const EditProduct = ({ product, onProductUpdate, onCancel }) => {
 
         if (currentVersion !== undefined) {
             await updateDoc(versionDocRef, { version: currentVersion + 1 });
+            
+            // Borrar el localStorage cuando la versión se actualiza
+            localStorage.removeItem('products');
             localStorage.setItem('version', currentVersion + 1);
         }
     };
-
     
     const handleSubmit = async (e) => {
         e.preventDefault();

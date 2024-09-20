@@ -83,12 +83,14 @@ const UploadProduct = () => {
         const versionDocRef = doc(db, 'Versiones', VERSION_ID);
         const versionSnapshot = await getDoc(versionDocRef);
         const currentVersion = versionSnapshot.data()?.version;
-
+    
         if (currentVersion !== undefined) {
             await updateDoc(versionDocRef, { version: currentVersion + 1 });
+            localStorage.removeItem('products'); // Borrar productos del localStorage al actualizar la versión
             localStorage.setItem('version', currentVersion + 1);
         }
     };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
