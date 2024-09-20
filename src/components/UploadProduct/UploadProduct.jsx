@@ -188,11 +188,11 @@ const UploadProduct = () => {
             />
             <input
                 name="observaciones"
-                placeholder="Observaciones (máximo 30 caracteres)"
+                placeholder="Observaciones (máximo 60 caracteres)"
                 type="text"
                 value={product.observaciones}
                 onChange={handleChange}
-                maxLength="30"
+                maxLength="60"
             />
             <button type="submit" disabled={loading}>
                 {loading ? 'Subiendo...' : 'Subir Producto'}
