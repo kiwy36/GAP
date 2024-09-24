@@ -6,6 +6,7 @@
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 /* Título principal */
@@ -50,6 +51,11 @@
     gap: 10px;
     justify-content: space-between;
     text-align: center;
+}
+.cart-product p {
+    word-wrap: break-word;  /* Permite el corte de palabras largas */
+    word-break: break-word; /* Fuerza a que las palabras muy largas se partan */
+    white-space: normal;    /* Permite que el texto baje de línea cuando es necesario */
 }
 
 /* Botón para eliminar producto */

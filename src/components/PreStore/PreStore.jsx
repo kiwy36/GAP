@@ -38,7 +38,8 @@ const PreStore = ({ product, onClose, onConfirm }) => {
                 <input 
                     type="text" 
                     value={observations} 
-                    onChange={(e) => setObservations(e.target.value)} 
+                    onChange={(e) => setObservations(e.target.value)}
+                    maxLength="60"
                 />
             </label>
             <p><strong>Total:</strong> ${quantity * product.precio}</p>

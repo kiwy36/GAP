@@ -186,6 +186,7 @@ const UploadProduct = () => {
                 type="number"
                 value={product.stock}
                 onChange={handleChange}
+                min="1"
                 required
             />
             <input

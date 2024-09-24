@@ -113,6 +113,7 @@ const EditProduct = ({ product, onProductUpdate, onCancel }) => {
                     placeholder="Stock"
                     value={localProduct.stock}
                     onChange={handleChange}
+                    min="1"
                     required
                 />
                 <textarea
