@@ -11,6 +11,7 @@ import './ReadProducts.css';
 const VERSION_ID = '1234'; // ID del documento en la colección Versiones
 
 const ReadProducts = () => {
+    // Estados para almacenar productos, productos filtrados, el usuario, productos seleccionados para editar o vender, y estados de carga y error.
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [user, setUser] = useState(null);
@@ -19,52 +20,52 @@ const ReadProducts = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [loading, setLoading] = useState(true); // Estado de carga
     const [error, setError] = useState(null); // Estado de error
-
+    // useEffect para verificar el estado de autenticación del usuario.
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
         });
         return unsubscribe;
     }, []);
-
+    // useEffect para cargar los productos si el usuario está autenticado.
     useEffect(() => {
         if (user) {
             const fetchProducts = async () => {
                 setLoading(true);
                 setError(null);
-    
+
                 try {
+                    // Verificar la versión de los productos en Firebase
                     const versionDoc = await getDoc(doc(db, 'Versiones', VERSION_ID));
                     const firebaseVersion = versionDoc.data()?.version;
                     const localVersion = localStorage.getItem('version');
-    
+
                     console.log(`Versión vigente en Firebase: ${firebaseVersion}`);
-    
+
                     // Verificar si la versión ha cambiado
                     if (localVersion && firebaseVersion === Number(localVersion)) {
                         console.log('Usando productos desde localStorage');
                         const storedProducts = JSON.parse(localStorage.getItem('products'));
                         if (storedProducts) {
-                            setProducts(storedProducts);
+                            setProducts(storedProducts); // Carga los productos desde localStorage
                             setFilteredProducts(storedProducts);
-                            setLoading(false);
+                            setLoading(false);// Detiene la carga
                             return;
                         }
                     } else {
                         console.log('La versión ha cambiado, cargando productos desde Firebase');
                         localStorage.removeItem('products'); // Limpiar localStorage si la versión cambió
                     }
-    
+
                     // Cargar productos desde Firebase
                     const querySnapshot = await getDocs(collection(db, 'Productos'));
                     const productsList = querySnapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data(),
                     }));
-    
+
                     const dataSize = new TextEncoder().encode(JSON.stringify(productsList)).length / 1024;
                     console.log(`Consumo de datos: ${dataSize.toFixed(2)} KB`);
-    
                     // Guardar productos y nueva versión en localStorage
                     setProducts(productsList);
                     setFilteredProducts(productsList);
@@ -77,12 +78,10 @@ const ReadProducts = () => {
                     setLoading(false);
                 }
             };
-    
             fetchProducts();
         }
     }, [user]);
-    
-
+    // Filtrar productos según los filtros aplicados por el usuario
     const handleFilter = useCallback((filters) => {
         const { name, barcode, category } = filters;
         const filtered = products.filter(product =>
@@ -92,11 +91,11 @@ const ReadProducts = () => {
         );
         setFilteredProducts(filtered);
     }, [products]);
-
+    // Manejar la acción de editar un producto
     const handleEdit = (product) => {
         setProductToEdit(product);
     };
-
+    // Actualiza la lista de productos después de editar
     const handleProductUpdate = () => {
         setProductToEdit(null); // Cierra el formulario de edición
         const fetchProducts = async () => {
@@ -106,7 +105,7 @@ const ReadProducts = () => {
                     id: doc.id,
                     ...doc.data(),
                 }));
-                setProducts(productsList);
+                setProducts(productsList); // Actualiza los productos
                 setFilteredProducts(productsList);
             } catch (error) {
                 console.error('Error al leer productos:', error);
@@ -114,15 +113,15 @@ const ReadProducts = () => {
         };
         fetchProducts();
     };
-
+    // Cancelar la edición del producto
     const handleCancel = () => {
-        setProductToEdit(null);
+        setProductToEdit(null); // Cierra el formulario de edición
     };
-
+    // Manejar la acción de eliminar un producto
     const handleDelete = async (productId) => {
         try {
-            await deleteDoc(doc(db, 'Productos', productId));
-
+            await deleteDoc(doc(db, 'Productos', productId));// Elimina el producto de Firebase
+            // Actualiza la lista de productos eliminando el producto
             const updatedProducts = products.filter(product => product.id !== productId);
             setProducts(updatedProducts);
             setFilteredProducts(updatedProducts);
@@ -142,12 +141,12 @@ const ReadProducts = () => {
             console.error('Error al eliminar producto:', error);
         }
     };
-
+    // Manejar la acción de añadir un producto a vendidos
     const handleAddToSold = (product) => {
         setSelectedProduct(product);
         setShowPreStore(true);
     };
-
+    // Confirmar la venta del producto y guardarlo en el carrito
     const handleConfirmSold = (soldProduct) => {
         const storedCartProducts = JSON.parse(localStorage.getItem('cartProducts')) || [];
         storedCartProducts.push(soldProduct);
@@ -160,7 +159,7 @@ const ReadProducts = () => {
             icon: 'success',
         });
     };
-
+    // Verifica si el usuario está autenticado
     if (!user) {
         return <p>Por favor, inicie sesión para ver los productos.</p>;
     }
@@ -187,12 +186,13 @@ const ReadProducts = () => {
                                     <h3>{product.nombre}</h3>
                                     <p><strong>Código:</strong> {product.codigo}</p>
                                     <p><strong>Categoría:</strong> {product.categoria || 'N/A'}</p>
+                                    <p><strong>Coste:</strong> ${product.coste}</p>
                                     <p><strong>Precio:</strong> ${product.precio}</p>
                                     <p><strong>Stock:</strong> {product.stock}</p>
                                     <p><strong>Observaciones:</strong> {product.observaciones}</p>
                                     <div className="button-container">
-                                        <button className="edit-button" onClick={() => handleEdit(product)}>Editar</button>
                                         <button className="delete-button" onClick={() => handleDelete(product.id)}>Eliminar</button>
+                                        <button className="edit-button" onClick={() => handleEdit(product)}>Editar</button>
                                         <button className="cart-button" onClick={() => handleAddToSold(product)}>Vendido</button>
                                     </div>
                                 </div>

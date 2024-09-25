@@ -205,7 +205,9 @@ const UploadProduct = () => {
     };
 
     return (
+        <section>
         <form onSubmit={handleSubmit} className="upload-form">
+        <h2 className='subTitle-uploadProduct'>Subir Producto</h2>
             {/* Campo para el nombre del producto */}
             <input
                 name="nombre"
@@ -295,6 +297,7 @@ const UploadProduct = () => {
                 {loading ? 'Cargando...' : 'Subir Producto'}
             </button>
         </form>
+        </section>
     );
 };
 
