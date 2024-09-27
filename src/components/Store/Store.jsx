@@ -11,25 +11,38 @@ const Store = () => {
 
     useEffect(() => {
         const storedCart = JSON.parse(localStorage.getItem('cartProducts')) || [];
-        setCartProducts(storedCart);
+        const groupedCart = groupCartProducts(storedCart);
+        setCartProducts(groupedCart);
 
         // Calcular totales
-        const totalQty = storedCart.reduce((sum, product) => sum + product.cantidad, 0);
-        const totalAmount = storedCart.reduce((sum, product) => sum + product.subtotal, 0);
+        calculateTotals(groupedCart);
+    }, []);
+
+    const groupCartProducts = (products) => {
+        const grouped = {};
+        products.forEach(product => {
+            if (grouped[product.id]) {
+                grouped[product.id].cantidad += product.cantidad;
+                grouped[product.id].subtotal += product.subtotal;
+            } else {
+                grouped[product.id] = { ...product };
+            }
+        });
+        return Object.values(grouped);
+    };
+
+    const calculateTotals = (products) => {
+        const totalQty = products.reduce((sum, product) => sum + product.cantidad, 0);
+        const totalAmount = products.reduce((sum, product) => sum + product.subtotal, 0);
         setTotalQuantity(totalQty);
         setTotalMoney(totalAmount);
-    }, []);
+    };
 
     const handleRemoveProduct = (indexToRemove) => {
         const updatedCart = cartProducts.filter((_, index) => index !== indexToRemove);
         setCartProducts(updatedCart);
         localStorage.setItem('cartProducts', JSON.stringify(updatedCart));
-
-        // Recalcular totales
-        const totalQty = updatedCart.reduce((sum, product) => sum + product.cantidad, 0);
-        const totalAmount = updatedCart.reduce((sum, product) => sum + product.subtotal, 0);
-        setTotalQuantity(totalQty);
-        setTotalMoney(totalAmount);
+        calculateTotals(updatedCart);
     };
 
     const handleSendOrder = async () => {
@@ -79,7 +92,7 @@ const Store = () => {
                         <div key={index} className="cart-product">
                             <p><strong>Producto:</strong> {product.nombre}</p>
                             <p><strong>Cantidad:</strong> {product.cantidad}</p>
-                            <p><strong>Subtotal:</strong> ${product.subtotal}</p>
+                            <p><strong>Subtotal:</strong> ${product.subtotal.toFixed(2)}</p>
                             {product.observaciones && <p><strong>Observaciones:</strong> {product.observaciones}</p>}
                             <button 
                                 className="remove-btn"
