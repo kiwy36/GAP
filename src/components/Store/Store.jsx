@@ -83,6 +83,7 @@ const Store = () => {
             <div className="store-summary">
                 <p><strong>Cantidad de productos vendidos:</strong> {totalQuantity}</p>
                 <p><strong>Total de dinero generado:</strong> ${totalMoney}</p>
+                <p><strong>Total de dinero gastado:</strong> ${totalMoney}</p>
             </div>
             <div className="cart-list">
                 {cartProducts.length === 0 ? (
