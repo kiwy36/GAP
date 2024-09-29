@@ -1,17 +1,23 @@
 /* Estilo general del modal */
 .prestore-modal {
     position: fixed;
-    top: 10%; /* Ajuste para que el modal esté a una leve distancia del inicio */
+    top: 10%;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000; /* Asegura que esté sobre todos los elementos */
-    background-color: white;
+    z-index: 1000;
+    background-color: #ffffff; /* Color de fondo blanco */
     border-radius: 8px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     padding: 20px;
     width: 90%;
     max-width: 400px;
     animation: slideDown 0.3s ease-out;
+    transition: background-color 0.3s ease; /* Transición al cambiar el fondo */
+}
+
+/* Estilos para resaltar el fondo del modal al pasar el ratón */
+.prestore-modal:hover {
+    background-color: #f8f9fa; /* Color de fondo más claro al pasar el ratón */
 }
 
 /* Animación para que el modal aparezca con una transición */
@@ -33,11 +39,32 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5); /* Transparencia para resaltar el modal */
+    background: rgba(0, 0, 0, 0.5);
     z-index: 999;
 }
 
-/* Botones de acción (Confirmar y Cancelar) */
+/* Estilos para los elementos dentro del modal */
+.prestore-product {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaciado más amplio para mejor organización */
+}
+
+/* Estilo de los items */
+.prestoreItem {
+    background-color: #f1f1f1; /* Fondo gris claro */
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    transition: transform 0.3s ease; /* Efecto de transición */
+}
+
+/* Efecto al pasar el ratón sobre los items */
+.prestoreItem:hover {
+    transform: scale(1.02); /* Aumentar levemente el tamaño */
+}
+
+/* Estilo de los botones de acción */
 .prestore-actions {
     display: flex;
     justify-content: space-between;
@@ -50,7 +77,7 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Añadir efecto de transición */
 }
 
 /* Estilo de los botones de acción */
@@ -61,6 +88,7 @@
 
 .PreStore-cancel:hover {
     background-color: #c82333;
+    transform: scale(1.05); /* Aumentar al pasar el ratón */
 }
 
 .PreStore-confirm {
@@ -70,38 +98,33 @@
 
 .PreStore-confirm:hover {
     background-color: #218838;
+    transform: scale(1.05); /* Aumentar al pasar el ratón */
 }
 
 /* Estilos para las etiquetas y campos de producto */
-.prestore-product {
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Espaciado más amplio para mejor organización */
-}
-
 .prestore-product label {
     font-size: 14px;
     font-weight: bold;
     margin-bottom: 5px;
-    display: block; /* Asegura que las etiquetas se alineen bien */
+    display: block;
 }
 
 .prestore-product input[type="number"],
 .prestore-product input[type="text"] {
-    width: 100%; /* Ambos inputs ocupan el 100% del espacio disponible */
-    padding: 10px 12px; /* Ajuste de padding para mayor comodidad */
+    width: 100%;
+    padding: 10px 12px;
     border: 1px solid #ced4da;
     border-radius: 4px;
     font-size: 16px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Efecto de transición */
-    box-sizing: border-box; /* Asegura que padding no afecte el ancho */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
 }
 
 /* Estilos al enfocar el input */
 .prestore-product input:focus {
-    outline: none; /* Eliminar el borde azul predeterminado */
-    border-color: #007bff; /* Cambiar color de borde al enfocar */
-    box-shadow: 0 0 6px rgba(0, 123, 255, 0.25); /* Sombra alrededor del input */
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.25);
 }
 
 /* Título del modal */
