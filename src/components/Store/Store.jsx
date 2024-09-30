@@ -7,35 +7,23 @@ import './Store.css';
 const Store = () => {
     const [cartProducts, setCartProducts] = useState([]);
     const [totalQuantity, setTotalQuantity] = useState(0);
-    const [totalMoney, setTotalMoney] = useState(0);
+    const [totalMoney, setTotalMoney] = useState(0); // Total de ingresos
+    const [totalCost, setTotalCost] = useState(0); // Total de gastos
 
     useEffect(() => {
         const storedCart = JSON.parse(localStorage.getItem('cartProducts')) || [];
-        const groupedCart = groupCartProducts(storedCart);
-        setCartProducts(groupedCart);
-
-        // Calcular totales
-        calculateTotals(groupedCart);
+        setCartProducts(storedCart);
+        calculateTotals(storedCart);
     }, []);
-
-    const groupCartProducts = (products) => {
-        const grouped = {};
-        products.forEach(product => {
-            if (grouped[product.id]) {
-                grouped[product.id].cantidad += product.cantidad;
-                grouped[product.id].subtotal += product.subtotal;
-            } else {
-                grouped[product.id] = { ...product };
-            }
-        });
-        return Object.values(grouped);
-    };
 
     const calculateTotals = (products) => {
         const totalQty = products.reduce((sum, product) => sum + product.cantidad, 0);
         const totalAmount = products.reduce((sum, product) => sum + product.subtotal, 0);
+        const totalCostAmount = products.reduce((sum, product) => sum + product.costeTotal, 0);
+
         setTotalQuantity(totalQty);
         setTotalMoney(totalAmount);
+        setTotalCost(totalCostAmount);
     };
 
     const handleRemoveProduct = (indexToRemove) => {
@@ -51,6 +39,7 @@ const Store = () => {
                 products: cartProducts,
                 totalQuantity,
                 totalMoney,
+                totalCost,
                 createdAt: new Date(),
             };
 
@@ -66,6 +55,7 @@ const Store = () => {
             setCartProducts([]);
             setTotalQuantity(0);
             setTotalMoney(0);
+            setTotalCost(0);
             localStorage.removeItem('cartProducts');
         } catch (error) {
             Swal.fire({
@@ -77,23 +67,38 @@ const Store = () => {
         }
     };
 
+    // Agrupar productos idénticos en el carrito
+    const groupedProducts = cartProducts.reduce((acc, product) => {
+        const existingProduct = acc.find(p => p.nombre === product.nombre);
+        if (existingProduct) {
+            existingProduct.cantidad += product.cantidad;
+            existingProduct.subtotal += product.subtotal;
+            existingProduct.costeTotal += product.costeTotal;
+            existingProduct.observaciones += existingProduct.observaciones ? `; ${product.observaciones}` : product.observaciones; // Concatenar observaciones
+        } else {
+            acc.push({ ...product });
+        }
+        return acc;
+    }, []);
+
     return (
         <div className="store-container">
             <h2 className="store-title">Resumen de Ventas</h2>
             <div className="store-summary">
                 <p><strong>Cantidad de productos vendidos:</strong> {totalQuantity}</p>
-                <p><strong>Total de dinero generado:</strong> ${totalMoney}</p>
-                <p><strong>Total de dinero gastado:</strong> ${totalMoney}</p>
+                <p><strong>Total de ingresos generados:</strong> ${totalMoney}</p>
+                <p><strong>Total de dinero gastado:</strong> ${totalCost}</p>
             </div>
             <div className="cart-list">
-                {cartProducts.length === 0 ? (
+                {groupedProducts.length === 0 ? (
                     <p className="empty-cart">No hay productos en el carrito.</p>
                 ) : (
-                    cartProducts.map((product, index) => (
+                    groupedProducts.map((product, index) => (
                         <div key={index} className="cart-product">
                             <p><strong>Producto:</strong> {product.nombre}</p>
                             <p><strong>Cantidad:</strong> {product.cantidad}</p>
                             <p><strong>Subtotal:</strong> ${product.subtotal.toFixed(2)}</p>
+                            <p><strong>Coste total por item:</strong> ${product.costeTotal.toFixed(2)}</p>
                             {product.observaciones && <p><strong>Observaciones:</strong> {product.observaciones}</p>}
                             <button 
                                 className="remove-btn"
@@ -105,7 +110,7 @@ const Store = () => {
                     ))
                 )}
             </div>
-            <button className="send-order-btn" onClick={handleSendOrder} disabled={cartProducts.length === 0}>
+            <button className="send-order-btn" onClick={handleSendOrder} disabled={groupedProducts.length === 0}>
                 Mandar Comanda
             </button>
         </div>
