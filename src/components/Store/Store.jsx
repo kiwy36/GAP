@@ -26,8 +26,9 @@ const Store = () => {
         setTotalCost(totalCostAmount);
     };
 
-    const handleRemoveProduct = (indexToRemove) => {
-        const updatedCart = cartProducts.filter((_, index) => index !== indexToRemove);
+    const handleRemoveProduct = (productName) => {
+        // Filtrar para eliminar todos los productos con el mismo nombre
+        const updatedCart = cartProducts.filter(product => product.nombre !== productName);
         setCartProducts(updatedCart);
         localStorage.setItem('cartProducts', JSON.stringify(updatedCart));
         calculateTotals(updatedCart);
@@ -102,7 +103,7 @@ const Store = () => {
                             {product.observaciones && <p><strong>Observaciones:</strong> {product.observaciones}</p>}
                             <button 
                                 className="remove-btn"
-                                onClick={() => handleRemoveProduct(index)}
+                                onClick={() => handleRemoveProduct(product.nombre)}
                             >
                                 Eliminar
                             </button>
