@@ -146,8 +146,8 @@ const Store = () => {
                         <div key={index} className="cart-product">
                             <p><strong>Producto:</strong> {product.nombre}</p>
                             <p><strong>Cantidad:</strong> {product.cantidad}</p>
-                            <p><strong>Subtotal:</strong> ${product.subtotal.toFixed(2)}</p>
-                            <p><strong>Coste total:</strong> ${product.costeTotal.toFixed(2)}</p>
+                            <p><strong>Subtotal:</strong> ${product.subtotal ? product.subtotal.toFixed(2) : '0.00'}</p>
+                            <p><strong>Coste total:</strong> ${product.costeTotal ? product.costeTotal.toFixed(2) : '0.00'}</p>
                             {product.observaciones && <p><strong>Observaciones:</strong> {product.observaciones}</p>}
                             <button 
                                 className="remove-btn"
