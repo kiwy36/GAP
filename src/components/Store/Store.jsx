@@ -12,6 +12,7 @@ const Store = () => {
     const [totalQuantity, setTotalQuantity] = useState(0); // Cantidad total de productos vendidos
     const [totalMoney, setTotalMoney] = useState(0); // Total de ingresos generados
     const [totalCost, setTotalCost] = useState(0); // Total de coste de los productos vendidos
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false); // Estado para deshabilitar el botón
 
     // useEffect para cargar productos del carrito desde localStorage cuando se monta el componente
     useEffect(() => {
@@ -92,7 +93,9 @@ const Store = () => {
     };
 
     // Función para enviar la comanda, actualizar stocks y versiones
+    // Función para enviar la comanda, actualizar stocks y versiones
     const handleSendOrder = async () => {
+        setIsButtonDisabled(true); // Deshabilitar el botón al iniciar el envío
         try {
             await updateProductStocks(); // Actualizar stocks de los productos vendidos
             const order = {
@@ -109,6 +112,9 @@ const Store = () => {
                 title: 'Comanda enviada',
                 text: 'La comanda ha sido enviada correctamente.',
                 icon: 'success',
+            }).then(() => {
+                // Rehabilitar el botón después de cerrar el SweetAlert
+                setIsButtonDisabled(false);
             });
 
             // Vaciar el carrito y localStorage después de enviar la comanda
@@ -122,10 +128,14 @@ const Store = () => {
                 title: 'Error',
                 text: 'No se pudo enviar la comanda.',
                 icon: 'error',
+            }).then(() => {
+                // Rehabilitar el botón también en caso de error
+                setIsButtonDisabled(false);
             });
             console.error('Error al enviar la comanda:', error); // Mostrar error en caso de fallo
         }
     };
+
 
     return (
         <div className="store-container">
@@ -160,9 +170,14 @@ const Store = () => {
                 )}
             </div>
             {/* Botón para enviar la comanda */}
-            <button className="send-order-btn" onClick={handleSendOrder} disabled={groupedProducts.length === 0}>
+            <button 
+                className="send-order-btn" 
+                onClick={handleSendOrder} 
+                disabled={groupedProducts.length === 0 || isButtonDisabled} // Deshabilitar si no hay productos o si está bloqueado
+            >
                 Mandar Comanda
             </button>
+
         </div>
     );
 };
