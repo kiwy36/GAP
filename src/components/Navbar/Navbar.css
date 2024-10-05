@@ -3,7 +3,6 @@
     background-color: #111; /* Color ligeramente más claro */
     padding: 15px 20px;
     width: 100%;
-    min-width: 100%;
     box-sizing: border-box;
     display: flex;
     justify-content: space-between; /* Espaciado entre logo y menú */
@@ -90,7 +89,7 @@
     position: absolute;
     top: 100%;
     left: 0;
-    width: 100%;
+    width: 100vw; /* Asegura que el menú cubra todo el ancho de la ventana */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     z-index: 1000;
     transition: height 0.3s ease-in-out; /* Transición al abrir */
@@ -125,6 +124,7 @@
 
     .navBar.open {
         display: flex;
+        width: 100vw; /* Asegura que el menú cubra todo el ancho de la ventana en móvil */
     }
 
     .close-menu-mobile {
