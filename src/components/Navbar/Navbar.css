@@ -3,6 +3,7 @@
     background-color: #111; /* Color ligeramente más claro */
     padding: 15px 20px;
     width: 100%;
+    min-width: 100%;
     box-sizing: border-box;
     display: flex;
     justify-content: space-between; /* Espaciado entre logo y menú */

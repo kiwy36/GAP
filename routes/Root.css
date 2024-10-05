@@ -11,6 +11,7 @@ html, body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 /* El contenedor main debe crecer para llenar el espacio disponible */
