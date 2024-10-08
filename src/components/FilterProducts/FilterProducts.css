@@ -10,14 +10,14 @@
 .filter-products input,
 .filter-products select {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 2px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
 }
 
 .filter-products button {
     padding: 10px 20px;
-    border: none;
+    border: solid 1px #fff;
     border-radius: 5px;
     background-color: #007bff;
     color: #fff;
