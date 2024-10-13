@@ -160,3 +160,27 @@
         padding: 10px; /* Espacio interno para los botones */
     }
 }
+/* Estilos para el contenedor de la paginación */
+.pagination {
+    display: flex; /* Usar flexbox para el alineamiento */
+    justify-content: center; /* Centrar los botones horizontalmente */
+    margin-top: 20px; /* Espacio arriba del contenedor */
+}
+
+/* Estilos para cada botón de paginación */
+.pagination-button {
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    padding: 10px 15px; /* Espaciado interno del botón */
+    margin: 0 5px; /* Margen entre botones */
+    cursor: pointer; /* Cambiar cursor al pasar por encima */
+    transition: background-color 0.3s; /* Transición suave para el color de fondo */
+    border-radius: 5px; /* Bordes redondeados */
+    background-color: red; /* Color de fondo por defecto para los botones */
+}
+
+/* Estilo para el botón activo (página seleccionada) */
+.pagination-button.active {
+    background-color: green; /* Color verde para el botón activo */
+}
+

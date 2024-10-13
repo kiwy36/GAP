@@ -2,68 +2,72 @@ import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
-import './FilterProducts.css';
+import './FilterProducts.css'; // Estilos específicos para el componente
 
 const FilterProducts = ({ onFilter }) => {
-    // Definir el estado para el nombre, código de barra, categoría seleccionada y lista de categorías
-    const [name, setName] = useState(''); // Estado para almacenar el valor del filtro de nombre
-    const [barcode, setBarcode] = useState(''); // Estado para almacenar el valor del filtro de código de barra
-    const [category, setCategory] = useState(''); // Estado para almacenar la categoría seleccionada
-    const [categories, setCategories] = useState([]); // Estado para almacenar las categorías disponibles
+    // Estados para los filtros de nombre, código de barra, categoría y las categorías disponibles
+    const [name, setName] = useState(''); // Almacena el filtro de nombre
+    const [barcode, setBarcode] = useState(''); // Almacena el filtro de código de barra
+    const [category, setCategory] = useState(''); // Almacena la categoría seleccionada
+    const [categories, setCategories] = useState([]); // Almacena la lista de categorías disponibles
 
-    // Función asíncrona para cargar las categorías desde Firebase y ordenarlas alfabéticamente
+    // Función para cargar las categorías desde Firebase
     const loadCategories = async () => {
-        // Obtener los documentos de la colección 'UserCategories' en Firebase
+        // Obtener documentos de la colección 'UserCategories' en Firebase
         const querySnapshot = await getDocs(collection(db, 'UserCategories'));
 
-        // Extraer los nombres de las categorías, ordenarlos alfabéticamente y guardarlos en el estado
+        // Procesar las categorías, ordenarlas y guardarlas en el estado
         const loadedCategories = querySnapshot.docs
-            .map(doc => doc.data().name) // Obtener el campo 'name' de cada documento
-            .sort((a, b) => a.localeCompare(b)); // Ordenar las categorías alfabéticamente
+            .map(doc => doc.data().name) // Extraer el campo 'name' de cada documento
+            .sort((a, b) => a.localeCompare(b)); // Ordenarlas alfabéticamente
 
-        setCategories(loadedCategories); // Actualizar el estado de las categorías
+        setCategories(loadedCategories); // Actualizar el estado con las categorías cargadas
     };
 
-    // Ejecutar la función `loadCategories` cuando el componente se monta (solo una vez)
+    // Ejecutar la función `loadCategories` al montar el componente
     useEffect(() => {
-        loadCategories(); // Cargar las categorías al montar el componente
-    }, []); // El array vacío [] asegura que esto solo se ejecute una vez al montar
+        loadCategories(); // Cargar las categorías solo una vez
+    }, []); // El array vacío asegura que se ejecute solo al montar el componente
 
-    // Función que invoca `onFilter` con los valores de los filtros seleccionados
+    // Función que invoca `onFilter` con los valores actuales de los filtros
     const handleFilter = useCallback(() => {
-        onFilter({ name, barcode, category }); // Pasar los valores actuales del nombre, código de barra y categoría
-    }, [name, barcode, category, onFilter]); // Dependencias: esta función cambia si alguno de estos valores cambia
+        // Llamar a la función `onFilter` con los valores actuales de los filtros
+        onFilter({ name, barcode, category });
+    }, [name, barcode, category, onFilter]); // Se vuelve a ejecutar si cambian los valores del filtro
 
-    // Cada vez que el valor del nombre, código de barra o categoría cambie, invocar `handleFilter`
+    // Ejecutar `handleFilter` cada vez que se cambien los valores del nombre, código de barra o categoría
     useEffect(() => {
-        handleFilter(); // Ejecutar la función que envía los filtros actualizados
-    }, [name, barcode, category, handleFilter]); // Se ejecuta cuando cualquiera de estos valores cambia
-
+        handleFilter(); // Llamar a la función de filtrado
+    }, [name, barcode, category, handleFilter]); // Dependencias: se ejecuta al cambiar estos valores
+    
     return (
         <div className="filter-products">
-            {/* Input para filtrar por nombre */}
+            {/* Filtro por nombre */}
             <input
                 type="text"
-                placeholder="Nombre" // Texto que aparece dentro del input como guía
-                value={name} // Valor actual del input (estado `name`)
-                onChange={(e) => setName(e.target.value)} // Actualiza el estado `name` cuando el usuario escribe
+                placeholder="Nombre" // Texto de guía en el input
+                value={name} // Valor del estado `name`
+                onChange={(e) => setName(e.target.value)} // Actualizar el estado cuando el usuario escribe
+                className="filter-input" // Estilo para el input
             />
-            
-            {/* Input para filtrar por código de barra */}
+
+            {/* Filtro por código de barra */}
             <input
                 type="text"
-                placeholder="Código de barra"
-                value={barcode} // Valor actual del input (estado `barcode`)
-                onChange={(e) => setBarcode(e.target.value)} // Actualiza el estado `barcode` cuando el usuario escribe
+                placeholder="Código de barra" // Texto de guía en el input
+                value={barcode} // Valor del estado `barcode`
+                onChange={(e) => setBarcode(e.target.value)} // Actualizar el estado cuando el usuario escribe
+                className="filter-input" // Estilo para el input
             />
-            
-            {/* Select para elegir la categoría */}
+
+            {/* Filtro por categoría */}
             <select
-                value={category} // Categoría actualmente seleccionada
-                onChange={(e) => setCategory(e.target.value)} // Actualiza el estado `category` cuando se selecciona una opción
+                value={category} // Categoría seleccionada actualmente
+                onChange={(e) => setCategory(e.target.value)} // Actualizar el estado cuando se selecciona una nueva opción
+                className="filter-select" // Estilo para el select
             >
                 <option value="">Selecciona una categoría</option> {/* Opción predeterminada vacía */}
-                {categories.map((cat, index) => ( // Mapear cada categoría cargada para crear opciones del select
+                {categories.map((cat, index) => ( // Crear opciones a partir de las categorías cargadas
                     <option key={index} value={cat}>{cat}</option> // Mostrar cada categoría como opción
                 ))}
             </select>
@@ -72,7 +76,7 @@ const FilterProducts = ({ onFilter }) => {
 };
 
 FilterProducts.propTypes = {
-    // Validar que la función `onFilter` sea pasada como prop y sea de tipo función
+    // Validar que `onFilter` sea una función pasada como prop
     onFilter: PropTypes.func.isRequired,
 };
 

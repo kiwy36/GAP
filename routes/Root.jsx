@@ -22,7 +22,6 @@ function Root() {
       <Router>
         {/* El componente Navbar se renderiza en todas las rutas como cabecera */}
         <Navbar />
-        
         {/* La etiqueta main contiene las rutas y los componentes asociados */}
         <main>
           <Routes>
