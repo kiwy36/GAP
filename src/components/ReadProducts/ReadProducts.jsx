@@ -38,13 +38,16 @@ const ReadProducts = () => {
                 try {
                     const versionDoc = await getDoc(doc(db, 'Versiones', VERSION_ID));
                     const firebaseVersion = versionDoc.data()?.version;
+                    console.log(`Versión actual en Firebase: ${firebaseVersion}`);
                     const localVersion = localStorage.getItem('version');
+                    console.log(`Versión almacenada localmente: ${localVersion}`);
 
                     if (localVersion && firebaseVersion === Number(localVersion)) {
                         const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
                         if (storedProducts.length > 0) {
                             setProducts(storedProducts);
                             setFilteredProducts(storedProducts.slice(0, PAGE_SIZE));
+                            console.log('Productos obtenidos de localStorage.');
                             setLoading(false);
                             return;
                         }
@@ -62,6 +65,7 @@ const ReadProducts = () => {
                     setFilteredProducts(productsList.slice(0, PAGE_SIZE));
                     localStorage.setItem('products', JSON.stringify(productsList));
                     localStorage.setItem('version', firebaseVersion);
+                    console.log('Productos obtenidos de Firebase.');
                     setLoading(false);
                 } catch (error) {
                     setError('No se pudieron cargar los productos.');
@@ -252,9 +256,8 @@ const ReadProducts = () => {
             )}
             {showPreStore && (
                 <PreStore 
-                    product={selectedProduct} 
-                    onConfirm={handleConfirmSold} 
-                    onClose={() => setShowPreStore(false)} 
+                    selectedProduct={selectedProduct} 
+                    onConfirmSold={handleConfirmSold} 
                 />
             )}
         </div>
