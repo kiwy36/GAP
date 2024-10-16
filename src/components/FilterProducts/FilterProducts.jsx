@@ -39,7 +39,6 @@ const FilterProducts = ({ onFilter }) => {
     useEffect(() => {
         handleFilter(); // Llamar a la función de filtrado
     }, [name, barcode, category, handleFilter]); // Dependencias: se ejecuta al cambiar estos valores
-    
     return (
         <div className="filter-products">
             {/* Filtro por nombre */}

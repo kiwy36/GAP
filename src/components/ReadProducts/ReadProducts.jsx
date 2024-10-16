@@ -3,7 +3,7 @@ import { collection, getDocs, getDoc, doc, deleteDoc } from 'firebase/firestore'
 import { db, auth } from '../../services/firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
 import Swal from 'sweetalert2';
-import FilterProducts from '../FilterProducts/FilterProducts.jsx';  
+import FilterProducts from '../FilterProducts/FilterProducts.jsx';
 import EditProduct from '../EditProduct/EditProduct.jsx';
 import PreStore from '../PreStore/PreStore.jsx';
 import './ReadProducts.css';
@@ -200,10 +200,10 @@ const ReadProducts = () => {
             <h2>Lista de Productos</h2>
             <FilterProducts onFilter={handleFilter} />
             {productToEdit ? (
-                <EditProduct 
-                    product={productToEdit} 
-                    onProductUpdate={handleProductUpdate} 
-                    onCancel={handleCancel} 
+                <EditProduct
+                    product={productToEdit}
+                    onProductUpdate={handleProductUpdate}
+                    onCancel={handleCancel}
                 />
             ) : (
                 <>
@@ -242,9 +242,9 @@ const ReadProducts = () => {
                     {products.length > PAGE_SIZE && (
                         <div className="pagination">
                             {Array.from({ length: Math.ceil(products.length / PAGE_SIZE) }, (_, i) => (
-                                <button 
+                                <button
                                     className={`pagination-button ${currentPage === i + 1 ? 'active' : ''}`} 
-                                    key={i} 
+                                    key={i}
                                     onClick={() => handlePagination(i + 1)}
                                 >
                                     {i + 1}
@@ -255,9 +255,9 @@ const ReadProducts = () => {
                 </>
             )}
             {showPreStore && (
-                <PreStore 
-                    selectedProduct={selectedProduct} 
-                    onConfirmSold={handleConfirmSold} 
+                <PreStore
+                    selectedProduct={selectedProduct}
+                    onConfirmSold={handleConfirmSold}
                 />
             )}
         </div>
