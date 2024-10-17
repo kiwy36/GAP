@@ -39,7 +39,7 @@
 .filter-products select {
     background-color: rgba(255, 255, 255, 0.95); /* Fondo casi blanco en el select */
     font-weight: bold; /* Texto en negrita */
-    color: #007bff; /* Texto en azul */
+    color: #0d5eb6; /* Texto en azul */
 }
 
 .filter-products button {
