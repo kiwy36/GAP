@@ -6,10 +6,10 @@ import Swal from 'sweetalert2';
 import FilterProducts from '../FilterProducts/FilterProducts.jsx';
 import EditProduct from '../EditProduct/EditProduct.jsx';
 import PreStore from '../PreStore/PreStore.jsx';
+import PaginationComponent from '../Pagination/Pagination.jsx';
 import './ReadProducts.css';
 
 const VERSION_ID = '1234'; // ID del documento en la colección Versiones
-const PAGE_SIZE = 8; // Tamaño de la paginación
 
 const ReadProducts = () => {
     const [products, setProducts] = useState([]);
@@ -21,6 +21,9 @@ const ReadProducts = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(8); // Cantidad de elementos por página
+    const [totalPages, setTotalPages] = useState(0); // Número total de páginas
+
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -28,7 +31,17 @@ const ReadProducts = () => {
         });
         return unsubscribe;
     }, []);
-
+    // Cambiar esta parte donde defines los productos a mostrar según la página actual
+    useEffect(() => {
+        const indexOfLastProduct = currentPage * itemsPerPage;
+        const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+        setFilteredProducts(products.slice(indexOfFirstProduct, indexOfLastProduct));
+    }, [currentPage, products, itemsPerPage]);
+    useEffect(() => {
+        const total = Math.ceil(products.length / itemsPerPage);
+        setTotalPages(total); // Debes agregar `setTotalPages` en tu estado
+    }, [products, itemsPerPage]);
+    
     useEffect(() => {
         if (user) {
             const fetchProducts = async () => {
@@ -46,7 +59,7 @@ const ReadProducts = () => {
                         const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
                         if (storedProducts.length > 0) {
                             setProducts(storedProducts);
-                            setFilteredProducts(storedProducts.slice(0, PAGE_SIZE));
+                            setFilteredProducts(storedProducts.slice(0, itemsPerPage));
                             console.log('Productos obtenidos de localStorage.');
                             setLoading(false);
                             return;
@@ -62,7 +75,7 @@ const ReadProducts = () => {
                     }));
 
                     setProducts(productsList);
-                    setFilteredProducts(productsList.slice(0, PAGE_SIZE));
+                    setFilteredProducts(productsList.slice(0, itemsPerPage));
                     localStorage.setItem('products', JSON.stringify(productsList));
                     localStorage.setItem('version', firebaseVersion);
                     console.log('Productos obtenidos de Firebase.');
@@ -92,7 +105,7 @@ const ReadProducts = () => {
             );
 
             setProducts(filtered);
-            setFilteredProducts(filtered.slice(0, PAGE_SIZE));
+            setFilteredProducts(filtered.slice(0, itemsPerPage));
             setLoading(false);
         } catch (error) {
             setError('No se pudieron cargar los productos filtrados.');
@@ -100,27 +113,29 @@ const ReadProducts = () => {
         }
     };
 
-    const handlePagination = (pageNumber) => {
-        const startIndex = (pageNumber - 1) * PAGE_SIZE;
-        const endIndex = pageNumber * PAGE_SIZE;
-        setFilteredProducts(products.slice(startIndex, endIndex));
-        setCurrentPage(pageNumber);
+    const onPageChange = (page) => {
+        setCurrentPage(page);
     };
-
     const handleFilter = useCallback((filters) => {
         const { name, barcode, category } = filters;
+
+        if (!name && !barcode && !category) {
+            setFilteredProducts(products); // Muestra todos los productos
+            setCurrentPage(1);
+            return;
+        }
 
         let filtered = products.filter(product =>
             (name ? product.nombre.toLowerCase().includes(name.toLowerCase()) : true) &&
             (barcode ? product.codigo.includes(barcode) : true) &&
             (category ? product.categoria === category : true)
         );
+        setFilteredProducts(filtered.slice(0, itemsPerPage));  // Muestra los primeros 8 productos filtrados
+        setTotalPages(Math.ceil(filtered.length / itemsPerPage));
+        setCurrentPage(1); // Reinicia a la primera página
 
         if (filtered.length === 0 && products.length === 0) {
             fetchFilteredProductsFromFirebase(name, barcode, category);
-        } else {
-            setFilteredProducts(filtered.slice(0, PAGE_SIZE));
-            setCurrentPage(1);
         }
     }, [products]);
 
@@ -138,7 +153,7 @@ const ReadProducts = () => {
                     ...doc.data(),
                 }));
                 setProducts(productsList);
-                setFilteredProducts(productsList.slice(0, PAGE_SIZE));
+                setFilteredProducts(productsList.slice(0, itemsPerPage));
             } catch (error) {
                 console.error('Error al leer productos:', error);
             }
@@ -239,19 +254,12 @@ const ReadProducts = () => {
                             ))}
                         </div>
                     )}
-                    {products.length > PAGE_SIZE && (
-                        <div className="pagination">
-                            {Array.from({ length: Math.ceil(products.length / PAGE_SIZE) }, (_, i) => (
-                                <button
-                                    className={`pagination-button ${currentPage === i + 1 ? 'active' : ''}`} 
-                                    key={i}
-                                    onClick={() => handlePagination(i + 1)}
-                                >
-                                    {i + 1}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                    
+                    <PaginationComponent
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={onPageChange}
+                    />
                 </>
             )}
             {showPreStore && (

@@ -11,6 +11,8 @@ import Register from '../src/components/Register/Register';
 import Login from '../src/components/Login/Login';
 import Store from '../src/components/Store/Store';
 import Statistics from '../src/components/Statistics/Statistics';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 // Importamos los estilos globales que aplican a toda la aplicación
 import './Root.css';
