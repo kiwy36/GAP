@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useCallback } from 'react';
 import { collection, getDocs, getDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '../../services/firebase.js';
@@ -23,7 +24,7 @@ const ReadProducts = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(8); // Cantidad de elementos por página
     const [totalPages, setTotalPages] = useState(0); // Número total de páginas
-
+    
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -87,7 +88,7 @@ const ReadProducts = () => {
             };
             fetchProducts();
         }
-    }, [user]);
+    }, [user, itemsPerPage]);
 
     const fetchFilteredProductsFromFirebase = async (name, barcode, category) => {
         setLoading(true);
@@ -271,5 +272,6 @@ const ReadProducts = () => {
         </div>
     );
 };
+
 
 export default ReadProducts;
