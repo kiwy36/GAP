@@ -263,10 +263,11 @@ const ReadProducts = () => {
                     />
                 </>
             )}
-            {showPreStore && (
+            {showPreStore && selectedProduct && (
                 <PreStore
-                    selectedProduct={selectedProduct}
-                    onConfirmSold={handleConfirmSold}
+                    product={selectedProduct}
+                    onConfirm={handleConfirmSold}
+                    onClose={() => setShowPreStore(false)} // Añadir la función para cerrar el modal
                 />
             )}
         </div>
