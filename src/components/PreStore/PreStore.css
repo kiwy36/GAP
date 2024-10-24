@@ -84,6 +84,8 @@
 .PreStore-cancel {
     background-color: #dc3545;
     color: white;
+    margin: 0 10px;
+    border-radius: 8px;
 }
 
 .PreStore-cancel:hover {
@@ -94,6 +96,8 @@
 .PreStore-confirm {
     background-color: #28a745;
     color: white;
+    margin: 0 10px;
+    border-radius: 8px;
 }
 
 .PreStore-confirm:hover {
