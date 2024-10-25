@@ -12,13 +12,24 @@ const Navbar = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        // Si el usuario está autenticado, guarda su userId en localStorage
+        localStorage.setItem('userId', currentUser.uid);
+      }
     });
     return unsubscribe;
   }, []);
 
   const handleLogout = async () => {
     try {
+      // Cerrar sesión en Firebase
       await signOut(auth);
+      
+      // Limpiar el estado del usuario y el localStorage
+      setUser(null); // Limpia el estado del usuario
+      localStorage.removeItem('userId'); // Elimina el userId de localStorage
+
+      // Redirigir al usuario a la página de inicio
       navigate('/');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);

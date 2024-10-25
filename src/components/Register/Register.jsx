@@ -1,59 +1,57 @@
 import { useState } from 'react'; // Hook para manejar el estado local
-import { auth, createUserWithEmailAndPassword } from '../../services/firebase.js'; // Importa la autenticación de Firebase
+import { db, auth, createUserWithEmailAndPassword } from '../../services/firebase.js'; // Importa la autenticación de Firebase
+import { doc, setDoc } from 'firebase/firestore';
 import './Register.css';
 import Swal from 'sweetalert2'; // Librería para mostrar alertas
 
 const Register = () => {
-  // Estados para almacenar los valores del formulario y posibles errores
-  const [email, setEmail] = useState(''); // Estado para almacenar el email del usuario
-  const [password, setPassword] = useState(''); // Estado para almacenar la contraseña del usuario
-  const [confirmPassword, setConfirmPassword] = useState(''); // Estado para almacenar la confirmación de contraseña
-  const [error, setError] = useState(''); // Estado para manejar mensajes de error
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
 
-  // Función para validar la contraseña con un regex
   const validatePassword = (password) => {
-    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // La contraseña debe tener al menos 8 caracteres, incluyendo letras y números
-    return regex.test(password); // Retorna true si la contraseña es válida
+    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return regex.test(password);
   };
 
-  // Función para manejar el proceso de registro
   const handleRegister = async () => {
-    // Verifica si las contraseñas coinciden
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden'); // Muestra un error si no coinciden
+      setError('Las contraseñas no coinciden');
       return;
     }
 
-    // Valida que la contraseña cumpla con los requisitos de seguridad
     if (!validatePassword(password)) {
       setError('La contraseña debe tener al menos 8 caracteres, incluyendo letras y números');
       return;
     }
 
-    setError(''); // Limpia el mensaje de error previo
+    setError('');
 
     try {
-      // Llama a Firebase para crear un nuevo usuario con el email y la contraseña proporcionados
-      await createUserWithEmailAndPassword(auth, email, password);
-      
-      // Muestra una alerta de éxito si el registro es exitoso
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Almacena datos adicionales del usuario en Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        createdAt: new Date().toISOString(),
+      });
+
       Swal.fire({
         title: "¡Buen trabajo!",
         text: "Usuario registrado exitosamente",
         icon: "success"
       });
     } catch (error) {
-      // Captura y muestra cualquier error durante el proceso de registro
       console.error('Error en el registro:', error);
       setError('Error en el registro: ' + error.message);
     }
   };
 
-  // Renderiza el formulario de registro
   return (
     <div className="register-container">
       <h2>Registrar</h2>
-      {/* Campo de entrada para el email */}
       <input
         type="email"
         placeholder="Email"
@@ -61,7 +59,6 @@ const Register = () => {
         onChange={(e) => setEmail(e.target.value)}
         className="input-field"
       />
-      {/* Campo de entrada para la contraseña */}
       <input
         type="password"
         placeholder="Contraseña"
@@ -69,7 +66,6 @@ const Register = () => {
         onChange={(e) => setPassword(e.target.value)}
         className="input-field"
       />
-      {/* Campo de entrada para confirmar la contraseña */}
       <input
         type="password"
         placeholder="Repetir Contraseña"
@@ -77,9 +73,7 @@ const Register = () => {
         onChange={(e) => setConfirmPassword(e.target.value)}
         className="input-field"
       />
-      {/* Muestra un mensaje de error si existe */}
       {error && <p className="error-message">{error}</p>}
-      {/* Botón para registrar al usuario */}
       <button onClick={handleRegister} className="register-button">Registrar</button>
     </div>
   );

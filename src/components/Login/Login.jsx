@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { auth, signInWithEmailAndPassword } from '../../services/firebase.js';
 import Swal from 'sweetalert2'; // Librería para mostrar alertas interactivas
@@ -8,6 +9,7 @@ const Login = () => {
   const [email, setEmail] = useState(''); // Estado para almacenar el email del usuario
   const [password, setPassword] = useState(''); // Estado para almacenar la contraseña del usuario
   const [error, setError] = useState(''); // Estado para almacenar errores de inicio de sesión
+  const [userId, setUserId] = useState(null); // Estado para almacenar el userId del usuario autenticado
 
   // Función que maneja el proceso de inicio de sesión
   const handleLogin = async () => {
@@ -21,8 +23,12 @@ const Login = () => {
 
     try {
       // Llamada a Firebase para autenticar al usuario con email y contraseña
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user; // Obtiene el userId del usuario autenticado
       
+      setUserId(user.uid);
+      localStorage.setItem('userId', user.uid); // guarda el userId en localStorage
+
       // Muestra una alerta de éxito si la autenticación es correcta
       Swal.fire({
         title: "¡Bienvenido!",
