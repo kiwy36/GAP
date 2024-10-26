@@ -31,13 +31,35 @@ const Register = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+      
+      // Almacena datos adicionales del usuario en Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        createdAt: new Date().toISOString(),
+      });
       // Almacena datos adicionales del usuario en Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
         createdAt: new Date().toISOString(),
       });
 
+      // Crear subcolecciones para el usuario
+      await setDoc(doc(db, 'users', user.uid, 'Versiones', 'version vigente'), {
+        version: 1
+      });
+
+      // Crear las subcolecciones vacías (puedes agregar más lógica si es necesario)
+      await setDoc(doc(db, 'users', user.uid, 'Productos', 'exampleProductId'), {
+        // Puedes dejarlo vacío o agregar un objeto inicial
+      });
+
+      await setDoc(doc(db, 'users', user.uid, 'UserCategories', 'exampleCategoryId'), {
+        // Puedes dejarlo vacío o agregar un objeto inicial
+      });
+
+      await setDoc(doc(db, 'users', user.uid, 'Ventas', 'exampleSaleId'), {
+        // Puedes dejarlo vacío o agregar un objeto inicial
+      });
       Swal.fire({
         title: "¡Buen trabajo!",
         text: "Usuario registrado exitosamente",
