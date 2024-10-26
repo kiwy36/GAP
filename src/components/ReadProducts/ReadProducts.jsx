@@ -10,8 +10,6 @@ import PreStore from '../PreStore/PreStore.jsx';
 import PaginationComponent from '../Pagination/Pagination.jsx';
 import './ReadProducts.css';
 
-const VERSION_ID = '1234'; // ID del documento en la colección Versiones
-
 const ReadProducts = () => {
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -50,7 +48,7 @@ const ReadProducts = () => {
                 setError(null);
 
                 try {
-                    const versionDoc = await getDoc(doc(db, 'Versiones', VERSION_ID));
+                    const versionDoc = await getDoc(doc(db, 'users', user.uid, 'Versiones', 'version vigente'));
                     const firebaseVersion = versionDoc.data()?.version;
                     console.log(`Versión actual en Firebase: ${firebaseVersion}`);
                     const localVersion = localStorage.getItem('version');
@@ -69,7 +67,7 @@ const ReadProducts = () => {
                         localStorage.removeItem('products');
                     }
 
-                    const querySnapshot = await getDocs(collection(db, 'Productos'));
+                    const querySnapshot = await getDocs(collection(db, 'users', user.uid, 'Productos'));
                     const productsList = querySnapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data(),
@@ -93,7 +91,7 @@ const ReadProducts = () => {
     const fetchFilteredProductsFromFirebase = async (name, barcode, category) => {
         setLoading(true);
         try {
-            const querySnapshot = await getDocs(collection(db, 'Productos'));
+            const querySnapshot = await getDocs(collection(db, 'users', user.uid, 'Productos'));
             const allProducts = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
@@ -148,7 +146,7 @@ const ReadProducts = () => {
         setProductToEdit(null);
         const fetchUpdatedProducts = async () => {
             try {
-                const querySnapshot = await getDocs(collection(db, 'Productos'));
+                const querySnapshot = await getDocs(collection(db, 'users', user.uid, 'Productos'));
                 const productsList = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data(),
@@ -168,7 +166,7 @@ const ReadProducts = () => {
 
     const handleDelete = async (productId) => {
         try {
-            await deleteDoc(doc(db, 'Productos', productId));
+            await deleteDoc(doc(db, 'users', user.uid, 'Productos', productId));
             const updatedProducts = products.filter(product => product.id !== productId);
             setProducts(updatedProducts);
             setFilteredProducts(updatedProducts);
@@ -214,12 +212,13 @@ const ReadProducts = () => {
     return (
         <div>
             <h2>Lista de Productos</h2>
-            <FilterProducts onFilter={handleFilter} />
+            <FilterProducts userId={user ? user.uid : ''} onFilter={handleFilter} />
             {productToEdit ? (
                 <EditProduct
                     product={productToEdit}
                     onProductUpdate={handleProductUpdate}
                     onCancel={handleCancel}
+                    user={user}
                 />
             ) : (
                 <>

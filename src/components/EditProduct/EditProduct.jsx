@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect ,useCallback} from 'react';
 import { doc, updateDoc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import Swal from 'sweetalert2';
@@ -6,9 +7,9 @@ import './EditProduct.css';
 import PropTypes from 'prop-types';
 
 // ID de la colección de versiones en Firebase
-const VERSION_ID = '1234';
+const VERSION_ID = 'version vigente';
 
-const EditProduct = ({ product, onProductUpdate, onCancel }) => {
+const EditProduct = ({ product, onProductUpdate, onCancel , user}) => {
     // Estado local para el producto que se está editando
     const [localProduct, setLocalProduct] = useState(product);
     // Estado local para las categorías disponibles
@@ -17,20 +18,21 @@ const EditProduct = ({ product, onProductUpdate, onCancel }) => {
     const [loading, setLoading] = useState(false);
 
     // Función para cargar las categorías desde Firebase y ordenarlas alfabéticamente
-    const loadCategories = async () => {
-        const querySnapshot = await getDocs(collection(db, 'UserCategories'));
+    const loadCategories = useCallback(async () => {
+        const querySnapshot = await getDocs(collection(db, 'users', user.uid, 'UserCategories'));
         const loadedCategories = querySnapshot.docs
             .map(doc => doc.data().name) // Extraer solo el nombre de cada categoría
             .sort((a, b) => a.localeCompare(b)); // Ordenar alfabéticamente
-
+    
         setCategories(loadedCategories); // Guardar las categorías en el estado
-    };
-
-    // useEffect se ejecuta cuando el componente se monta o cuando cambia el producto
+    }, [user.uid]); // Añade user.uid como dependencia
+    
+    // useEffect
     useEffect(() => {
         setLocalProduct(product); // Actualiza el producto local cuando cambie la prop product
         loadCategories(); // Cargar las categorías al montar el componente
-    }, [product]);
+    }, [product, user.uid, loadCategories]);
+
 
     // Manejar cambios en los inputs del formulario
     const handleChange = (e) => {
@@ -38,9 +40,8 @@ const EditProduct = ({ product, onProductUpdate, onCancel }) => {
         setLocalProduct((prev) => ({ ...prev, [name]: value })); // Actualizar el estado local del producto
     };
 
-    // Función para actualizar la versión del producto en Firebase
     const updateVersion = async () => {
-        const versionDocRef = doc(db, 'Versiones', VERSION_ID);
+        const versionDocRef = doc(db, 'users', user.uid, 'Versiones', VERSION_ID);
         const versionSnapshot = await getDoc(versionDocRef);
         const currentVersion = versionSnapshot.data()?.version;
 
@@ -60,7 +61,7 @@ const EditProduct = ({ product, onProductUpdate, onCancel }) => {
 
         try {
             // Actualizar el producto en Firebase
-            await updateDoc(doc(db, 'Productos', localProduct.id), localProduct);
+            await updateDoc(doc(db, 'users', user.uid, 'Productos', localProduct.id), localProduct);
             // Actualizar la versión en Firebase y en localStorage
             await updateVersion();
             // Mostrar mensaje de éxito con SweetAlert
@@ -175,7 +176,6 @@ const EditProduct = ({ product, onProductUpdate, onCancel }) => {
     );
 };
 
-// Definición de las propTypes para la validación de las props
 EditProduct.propTypes = {
     product: PropTypes.shape({
         id: PropTypes.string.isRequired,
@@ -189,6 +189,9 @@ EditProduct.propTypes = {
     }).isRequired,
     onProductUpdate: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
+    user: PropTypes.shape({
+        uid: PropTypes.string.isRequired, // Asegúrate de que `user` tenga un uid
+    }).isRequired,
 };
 
 export default EditProduct;

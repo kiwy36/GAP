@@ -53,8 +53,8 @@ const Register = () => {
         // Puedes dejarlo vacío o agregar un objeto inicial
       });
 
-      await setDoc(doc(db, 'users', user.uid, 'UserCategories', 'exampleCategoryId'), {
-        // Puedes dejarlo vacío o agregar un objeto inicial
+      await setDoc(doc(db, 'users', user.uid, 'UserCategories', 'Todas las Categorias'), {
+        name: 'Gestionar categorias'
       });
 
       await setDoc(doc(db, 'users', user.uid, 'Ventas', 'exampleSaleId'), {
