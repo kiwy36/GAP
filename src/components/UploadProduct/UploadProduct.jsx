@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, addDoc, getDocs, query, where, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import Swal from 'sweetalert2';
+import PropTypes from 'prop-types';
 import './UploadProduct.css';
 
 // ID del documento donde se maneja la versión en Firestore
-const VERSION_ID = '1234'; 
+const VERSION_ID = 'version vigente';
 
-const UploadProduct = () => {
+const UploadProduct = ({ user }) => {
     // Estado inicial del producto con sus campos
     const [product, setProduct] = useState({
         nombre: '',
@@ -29,23 +30,18 @@ const UploadProduct = () => {
     const [loading, setLoading] = useState(false);
 
     // Función para cargar las categorías personalizadas desde Firestore
-    const loadCategories = async () => {
-        // Obtiene las categorías guardadas en la colección "UserCategories"
-        const querySnapshot = await getDocs(collection(db, 'UserCategories'));
-
-        // Mapea los datos obtenidos y los ordena alfabéticamente
+    const loadCategories = useCallback(async () => {
+        const querySnapshot = await getDocs(collection(db, 'users', user.uid, 'UserCategories'));
         const loadedCategories = querySnapshot.docs
             .map(doc => doc.data().name)
             .sort((a, b) => a.localeCompare(b));
-
-        // Actualiza el estado con las categorías cargadas
         setCategories(loadedCategories);
-    };
+    }, [user.uid]);
 
     // Se ejecuta al montar el componente para cargar las categorías
     useEffect(() => {
         loadCategories();
-    }, []);
+    }, [loadCategories]);
 
     // Función para capitalizar la primera letra de un string (usado en nombres y categorías)
     const capitalizeFirstLetter = (string) => {
@@ -82,7 +78,7 @@ const UploadProduct = () => {
     
         try {
             // Agrega la nueva categoría a la colección 'UserCategories'
-            await addDoc(collection(db, 'UserCategories'), { name: capitalizeFirstLetter(newCategory) });
+            await addDoc(collection(db, 'users', user.uid, 'UserCategories'), { name: capitalizeFirstLetter(newCategory) });
             setNewCategory(''); // Resetea el campo de la nueva categoría
     
             // Recarga las categorías después de añadir la nueva
@@ -105,15 +101,14 @@ const UploadProduct = () => {
 
     // Función para actualizar la versión en Firestore y el localStorage
     const updateVersion = async () => {
-        const versionDocRef = doc(db, 'Versiones', VERSION_ID); // Referencia al documento de versiones
-        const versionSnapshot = await getDoc(versionDocRef); // Obtiene el snapshot del documento de versiones
-        const currentVersion = versionSnapshot.data()?.version; // Obtiene el valor actual de la versión
-    
+        const versionDocRef = doc(db, 'users', user.uid, 'Versiones', VERSION_ID);
+        const versionSnapshot = await getDoc(versionDocRef);
+        const currentVersion = versionSnapshot.data()?.version;
+
         if (currentVersion !== undefined) {
-            // Si la versión existe, se incrementa en 1 y se actualiza en Firestore
             await updateDoc(versionDocRef, { version: currentVersion + 1 });
-            localStorage.removeItem('products'); // Limpia los productos en localStorage
-            localStorage.setItem('version', currentVersion + 1); // Actualiza la versión en localStorage
+            localStorage.removeItem('products');
+            localStorage.setItem('version', currentVersion + 1);
         }
     };
 
@@ -154,14 +149,14 @@ const UploadProduct = () => {
         }
 
         // Consulta para verificar si ya existe un producto con el mismo código de barra
-        const q = query(collection(db, 'Productos'), where('codigo', '==', product.codigo));
+        const q = query(collection(db, 'users', user.uid, 'Productos'), where('codigo', '==', product.codigo));
         const querySnapshot = await getDocs(q);
 
         // Si no existe un producto con el mismo código
         if (querySnapshot.empty) {
             try {
                 // Añade el nuevo producto a la colección 'Productos'
-                await addDoc(collection(db, 'Productos'), product);
+                await addDoc(collection(db, 'users', user.uid, 'Productos'), product);
                 
                 // Actualiza la versión en Firestore y localStorage
                 await updateVersion();
@@ -299,6 +294,12 @@ const UploadProduct = () => {
         </form>
         </section>
     );
+};
+// Definir PropTypes para validar `user` y `user.uid`
+UploadProduct.propTypes = {
+    user: PropTypes.shape({
+        uid: PropTypes.string.isRequired,
+    }).isRequired,
 };
 
 export default UploadProduct;
