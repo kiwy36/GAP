@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { collection, addDoc, getDocs, query, where, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import Swal from 'sweetalert2';
 import './UploadProduct.css';
+import PropTypes from 'prop-types';
 
 // ID del documento donde se maneja la versión en Firestore
-const VERSION_ID = '1234'; 
+const VERSION_ID = 'version vigente';
 
-const UploadProduct = () => {
+const UploadProduct = ({ user }) => {
     // Estado inicial del producto con sus campos
     const [product, setProduct] = useState({
         nombre: '',
@@ -29,23 +30,27 @@ const UploadProduct = () => {
     const [loading, setLoading] = useState(false);
 
     // Función para cargar las categorías personalizadas desde Firestore
-    const loadCategories = async () => {
-        // Obtiene las categorías guardadas en la colección "UserCategories"
-        const querySnapshot = await getDocs(collection(db, 'UserCategories'));
+    const loadCategories = useCallback(async () => {
+        if (!user?.uid) return;  // Verificación de `user` y `uid`
+        
+        try {
+            const querySnapshot = await getDocs(collection(db, 'users', user.uid, 'UserCategories'));
+            const loadedCategories = querySnapshot.docs
+                .map(doc => doc.data().name)
+                .sort((a, b) => a.localeCompare(b));
+            setCategories(loadedCategories);
+        } catch (error) {
+            console.error('Error cargando categorías:', error);
+        }
+    }, [user]);
+    
 
-        // Mapea los datos obtenidos y los ordena alfabéticamente
-        const loadedCategories = querySnapshot.docs
-            .map(doc => doc.data().name)
-            .sort((a, b) => a.localeCompare(b));
-
-        // Actualiza el estado con las categorías cargadas
-        setCategories(loadedCategories);
-    };
-
-    // Se ejecuta al montar el componente para cargar las categorías
+    // Ejecutar al montar el componente
     useEffect(() => {
-        loadCategories();
-    }, []);
+        if (user?.uid) {  // Verificación de `user` y `uid`
+            loadCategories();
+        }
+    }, [user, loadCategories]);
 
     // Función para capitalizar la primera letra de un string (usado en nombres y categorías)
     const capitalizeFirstLetter = (string) => {
@@ -55,23 +60,20 @@ const UploadProduct = () => {
     // Función que maneja los cambios en los inputs del formulario
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        // Si es el campo nombre, capitaliza la primera letra
         const formattedValue = name === 'nombre' ? capitalizeFirstLetter(value) : value;
-
-        // Actualiza el estado del producto con el valor ingresado por el usuario
         setProduct((prev) => ({ ...prev, [name]: formattedValue }));
     };
 
     // Función para manejar el cambio del campo de nueva categoría
     const handleNewCategoryChange = (e) => {
-        setNewCategory(e.target.value); // Actualiza el estado con la nueva categoría ingresada
+        setNewCategory(e.target.value);
     };
 
     // Función para añadir una nueva categoría a Firestore
     const handleAddCategory = async () => {
+        if (!user?.uid) return; // Verificación de `user` y `uid`
+    
         if (newCategory.trim() === '') {
-            // Muestra una alerta si el campo de la nueva categoría está vacío
             Swal.fire({
                 title: 'Error',
                 text: 'La categoría no puede estar vacía.',
@@ -81,19 +83,16 @@ const UploadProduct = () => {
         }
     
         try {
-            // Agrega la nueva categoría a la colección 'UserCategories'
-            await addDoc(collection(db, 'UserCategories'), { name: capitalizeFirstLetter(newCategory) });
-            setNewCategory(''); // Resetea el campo de la nueva categoría
-    
-            // Recarga las categorías después de añadir la nueva
-            await loadCategories();
+            // Añadir nueva categoría
+            await addDoc(collection(db, 'users', user.uid, 'UserCategories'), { name: capitalizeFirstLetter(newCategory) });
+            setNewCategory(''); // Limpiar el campo de entrada
+            await loadCategories(); // Volver a cargar las categorías
             Swal.fire({
                 title: 'Éxito',
                 text: 'Categoría añadida con éxito',
                 icon: 'success',
             });
         } catch (error) {
-            // Muestra un error si ocurre algún problema al agregar la categoría
             Swal.fire({
                 title: 'Error',
                 text: 'Error al agregar la categoría. Inténtelo de nuevo.',
@@ -105,75 +104,46 @@ const UploadProduct = () => {
 
     // Función para actualizar la versión en Firestore y el localStorage
     const updateVersion = async () => {
-        const versionDocRef = doc(db, 'Versiones', VERSION_ID); // Referencia al documento de versiones
-        const versionSnapshot = await getDoc(versionDocRef); // Obtiene el snapshot del documento de versiones
-        const currentVersion = versionSnapshot.data()?.version; // Obtiene el valor actual de la versión
+        if (!user?.uid) return; // Verificación de `user` y `uid`
+        
+        const versionDocRef = doc(db, 'users', user.uid, 'Versiones', VERSION_ID);
+        const versionSnapshot = await getDoc(versionDocRef);
+        const currentVersion = versionSnapshot.data()?.version;
     
         if (currentVersion !== undefined) {
-            // Si la versión existe, se incrementa en 1 y se actualiza en Firestore
             await updateDoc(versionDocRef, { version: currentVersion + 1 });
-            localStorage.removeItem('products'); // Limpia los productos en localStorage
-            localStorage.setItem('version', currentVersion + 1); // Actualiza la versión en localStorage
+            localStorage.removeItem('products');
+            localStorage.setItem('version', currentVersion + 1);
         }
     };
 
     // Función que maneja el envío del formulario
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Previene el comportamiento por defecto del formulario
-        setLoading(true); // Activa el indicador de carga
+        e.preventDefault();
+        setLoading(true);
 
-        // Validaciones para el coste, precio y stock (evitar valores negativos)
-        if (product.coste < 0) {
+        if (product.coste < 0 || product.precio < 0 || product.stock < 0) {
             Swal.fire({
                 title: 'Error',
-                text: 'El coste no puede ser un valor negativo.',
+                text: 'Coste, precio y stock deben ser valores positivos.',
                 icon: 'error',
             });
             setLoading(false);
             return;
         }
 
-        if (product.precio < 0) {
-            Swal.fire({
-                title: 'Error',
-                text: 'El precio no puede ser un valor negativo.',
-                icon: 'error',
-            });
-            setLoading(false);
-            return;
-        }
-
-        if (product.stock < 0) {
-            Swal.fire({
-                title: 'Error',
-                text: 'El stock no puede ser un valor negativo.',
-                icon: 'error',
-            });
-            setLoading(false);
-            return;
-        }
-
-        // Consulta para verificar si ya existe un producto con el mismo código de barra
-        const q = query(collection(db, 'Productos'), where('codigo', '==', product.codigo));
+        const q = query(collection(db, 'users', user.uid, 'Productos'), where('codigo', '==', product.codigo));
         const querySnapshot = await getDocs(q);
 
-        // Si no existe un producto con el mismo código
         if (querySnapshot.empty) {
             try {
-                // Añade el nuevo producto a la colección 'Productos'
-                await addDoc(collection(db, 'Productos'), product);
-                
-                // Actualiza la versión en Firestore y localStorage
+                await addDoc(collection(db, 'users', user.uid, 'Productos'), product);
                 await updateVersion();
-
-                // Muestra un mensaje de éxito
                 Swal.fire({
                     title: 'Éxito',
                     text: 'Producto subido con éxito',
                     icon: 'success',
                 });
-
-                // Resetea el formulario después de subir el producto
                 setProduct({
                     nombre: '',
                     codigo: '',
@@ -184,7 +154,6 @@ const UploadProduct = () => {
                     observaciones: '',
                 });
             } catch (error) {
-                // Muestra un mensaje de error si falla la subida
                 Swal.fire({
                     title: 'Error',
                     text: 'Error al subir el producto. Inténtelo de nuevo.',
@@ -193,7 +162,6 @@ const UploadProduct = () => {
                 console.error('Error al subir el producto:', error);
             }
         } else {
-            // Muestra un mensaje si ya existe un producto con el mismo código
             Swal.fire({
                 title: 'Error',
                 text: 'Ya existe un producto con ese código.',
@@ -201,104 +169,39 @@ const UploadProduct = () => {
             });
         }
 
-        setLoading(false); // Desactiva el indicador de carga
+        setLoading(false);
     };
 
     return (
         <section>
-        <form onSubmit={handleSubmit} className="upload-form">
-        <h2 className='subTitle-uploadProduct'>Subir Producto</h2>
-            {/* Campo para el nombre del producto */}
-            <input
-                name="nombre"
-                placeholder="Nombre"
-                value={product.nombre}
-                onChange={handleChange}
-                required
-            />
-
-            {/* Campo para el código de barra del producto */}
-            <input
-                name="codigo"
-                placeholder="Código de barra"
-                value={product.codigo}
-                onChange={handleChange}
-                type="text"
-                required
-            />
-
-            {/* Campo para el coste del producto */}
-            <input
-                name="coste"
-                placeholder="Coste"
-                type="number"
-                value={product.coste}
-                onChange={handleChange}
-                min="0" // No permite valores negativos
-                required
-            />
-
-            {/* Campo para el precio del producto */}
-            <input
-                name="precio"
-                placeholder="Precio"
-                type="number"
-                value={product.precio}
-                onChange={handleChange}
-                min="0" // No permite valores negativos
-                required
-            />
-
-            {/* Selección de la categoría del producto */}
-            <select
-                name="categoria"
-                value={product.categoria}
-                onChange={handleChange}
-                required
-            >
-                <option value="">Selecciona una categoría</option>
-                {categories.map((category, index) => (
-                    <option key={index} value={category}>{category}</option>
-                ))}
-            </select>
-
-            {/* Campo para agregar una nueva categoría */}
-            <div className="new-category-container">
-                <input
-                    type="text"
-                    placeholder="Nueva categoría"
-                    value={newCategory}
-                    onChange={handleNewCategoryChange}
-                />
-                <button type="button" onClick={handleAddCategory}>Añadir Categoría</button>
-            </div>
-
-            {/* Campo para el stock del producto */}
-            <input
-                name="stock"
-                placeholder="Stock"
-                type="number"
-                value={product.stock}
-                onChange={handleChange}
-                min="0" // No permite valores negativos
-                required
-            />
-
-            {/* Campo para las observaciones del producto */}
-            <textarea
-                name="observaciones"
-                placeholder="Observaciones"
-                value={product.observaciones}
-                onChange={handleChange}
-            />
-
-            {/* Botón para subir el producto y mostrar indicador de carga si está subiendo */}
-            <button type="submit" disabled={loading}>
-                {loading ? 'Cargando...' : 'Subir Producto'}
-            </button>
-        </form>
+            <form onSubmit={handleSubmit} className="upload-form">
+                <h2 className='subTitle-uploadProduct'>Subir Producto</h2>
+                <input name="nombre" placeholder="Nombre" value={product.nombre} onChange={handleChange} required />
+                <input name="codigo" placeholder="Código de barra" value={product.codigo} onChange={handleChange} type="text" required />
+                <input name="coste" placeholder="Coste" type="number" value={product.coste} onChange={handleChange} min="0" required />
+                <input name="precio" placeholder="Precio" type="number" value={product.precio} onChange={handleChange} min="0" required />
+                <select name="categoria" value={product.categoria} onChange={handleChange} required>
+                    <option value="">Selecciona una categoría</option>
+                    {categories.map((category, index) => (
+                        <option key={index} value={category}>{category}</option>
+                    ))}
+                </select>
+                <div className="new-category-container">
+                    <input type="text" placeholder="Nueva categoría" value={newCategory} onChange={handleNewCategoryChange} />
+                    <button type="button" onClick={handleAddCategory}>Añadir Categoría</button>
+                </div>
+                <input name="stock" placeholder="Stock" type="number" value={product.stock} onChange={handleChange} min="0" required />
+                <textarea name="observaciones" placeholder="Observaciones" value={product.observaciones} onChange={handleChange} />
+                <button type="submit" disabled={loading}>{loading ? 'Cargando...' : 'Subir Producto'}</button>
+            </form>
         </section>
     );
+};
+
+UploadProduct.propTypes = {
+    user: PropTypes.shape({
+        uid: PropTypes.string.isRequired,
+    }).isRequired,
 };
 
 export default UploadProduct;

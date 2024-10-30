@@ -27,30 +27,31 @@ const Home = () => {
                         <h2>En esta app podrás subir información de tus productos, visualizarlos y actualizarlos.</h2>
                         <h3>Próximamente agregaremos diferenciación entre usuarios</h3>
                         <h2 className="instructions-title">Instrucciones</h2>
-                        <p className='instructions'>
-                            Esta aplicación te permite gestionar todos los aspectos relacionados con tus productos de forma eficiente. 
-                            El flujo de trabajo es sencillo:
-                            <br/><br/>
-                            1. <strong className="highlight-text">Subir productos</strong>: En la sección de <strong className="highlight-text">Subir Producto</strong>, puedes agregar información detallada de tus productos, 
-                            como nombre, descripción, precio y coste. Una vez que se sube el producto, este se almacena en la base de datos.
-                            <br/><br/>
-                            2. <strong className="highlight-text">Visualizar y gestionar productos</strong>: En la sección de <strong className="highlight-text">Productos</strong>, puedes ver una lista completa de los productos 
-                            que has subido. Desde aquí, puedes realizar varias acciones:
+                        <div className='instructions'>
+                            <p>Esta aplicación te permite gestionar todos los aspectos relacionados con tus productos de forma eficiente. 
+                            El flujo de trabajo es sencillo:</p>
+
+                            <p>1. <strong className="highlight-text">Subir productos</strong>: En la sección de <strong className="highlight-text">Subir Producto</strong>, puedes agregar información detallada de tus productos, 
+                            como nombre, descripción, precio y coste. Una vez que se sube el producto, este se almacena en la base de datos.</p>
+
+                            <p>2. <strong className="highlight-text">Visualizar y gestionar productos</strong>: En la sección de <strong className="highlight-text">Productos</strong>, puedes ver una lista completa de los productos 
+                            que has subido. Desde aquí, puedes realizar varias acciones:</p>
+
                             <ul className="instructions-list">
                                 <li><strong className="highlight-text">Editar:</strong> Modifica la información del producto si es necesario, como el precio o la descripción.</li>
                                 <li><strong className="highlight-text">Eliminar:</strong> Borra un producto de la base de datos si ya no lo necesitas.</li>
                                 <li><strong className="highlight-text">Vender:</strong> Registra una venta o una salida de inventario, actualizando el stock disponible.</li>
                             </ul>
-                            <br/>
-                            3. <strong className="highlight-text">Gestión de ventas:</strong> En la sección de <strong className="highlight-text">Ventas</strong>, puedes gestionar la salida de productos. Aquí puedes elegir productos 
-                            de tu inventario y registrar cuántas unidades se han vendido. Esta acción ajusta automáticamente el stock disponible.
-                            <br/><br/>
-                            4. <strong className="highlight-text">Estadísticas y reportes</strong>: Finalmente, en la sección de <strong className="highlight-text">Estadísticas</strong>, puedes consultar los reportes de ventas, 
+
+                            <p>3. <strong className="highlight-text">Gestión de ventas</strong>: En la sección de <strong className="highlight-text">Ventas</strong>, puedes gestionar la salida de productos. Aquí puedes elegir productos 
+                            de tu inventario y registrar cuántas unidades se han vendido. Esta acción ajusta automáticamente el stock disponible.</p>
+
+                            <p>4. <strong className="highlight-text">Estadísticas y reportes</strong>: Finalmente, en la sección de <strong className="highlight-text">Estadísticas</strong>, puedes consultar los reportes de ventas, 
                             revisar el rendimiento de tus productos y obtener información financiera detallada. También puedes filtrar las estadísticas 
-                            por fechas para analizar el comportamiento de ventas en periodos específicos.
-                            <br/><br/>
-                            Con estas herramientas, puedes administrar tu inventario de forma eficiente y tener una visión clara de tus operaciones.
-                        </p>
+                            por fechas para analizar el comportamiento de ventas en periodos específicos.</p>
+
+                            <p>Con estas herramientas, puedes administrar tu inventario de forma eficiente y tener una visión clara de tus operaciones.</p>
+                        </div>
                     </div>
                     <img className='background-image updated-image' src="https://lh3.googleusercontent.com/pw/AP1GczNg294d1O44mTghGBntqW5dO-LhA7hnWUicyp0kkMhG2QNfpdZUY4vWRkzB5Io5qZzgPAVVqU8RZintitNqUsz-PQvN_RajR1WZn-32rl0OvfYQJ4F9oLcr_YWFEGlGQu2VUdOg6P6KE-eRFPVwlOiJkA=w618-h618-s-no?authuser=0" alt="imghome" />
                 </>

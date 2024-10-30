@@ -1,7 +1,6 @@
-// Importamos los componentes necesarios de 'react-router-dom' para gestionar las rutas
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-
-// Importamos los componentes que se usarán en las diferentes rutas de la aplicación
+import { useEffect, useState } from 'react';
+import { auth } from '../src/services/firebase'
 import Home from '../src/components/Home/Home';
 import Footer from '../src/components/Footer/Footer';
 import Navbar from '../src/components/Navbar/Navbar';
@@ -12,37 +11,40 @@ import Login from '../src/components/Login/Login';
 import Store from '../src/components/Store/Store';
 import Statistics from '../src/components/Statistics/Statistics';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-
-// Importamos los estilos globales que aplican a toda la aplicación
 import './Root.css';
 
-// Definimos el componente Root que maneja la estructura principal de la aplicación
 function Root() {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                setUser(user); // Establece el usuario autenticado
+            } else {
+                setUser(null); // Sin usuario autenticado
+            }
+        });
+
+        return () => unsubscribe(); // Limpieza de la suscripción
+    }, []);
+
     return (
-      // El Router se encarga de manejar la navegación entre las diferentes rutas
       <Router>
-        {/* El componente Navbar se renderiza en todas las rutas como cabecera */}
         <Navbar />
-        {/* La etiqueta main contiene las rutas y los componentes asociados */}
         <main>
           <Routes>
-            {/* Definimos las rutas específicas para cada componente */}
-            <Route path="/" element={<Home />} /> {/* Ruta para la página principal */}
-            <Route path="/upload" element={<UploadProduct />} /> {/* Ruta para subir productos */}
-            <Route path="/read" element={<ReadProducts />} /> {/* Ruta para leer productos */}
-            <Route path="/register" element={<Register />} /> {/* Ruta para registro de usuarios */}
-            <Route path="/login" element={<Login />} /> {/* Ruta para iniciar sesión */}
-            <Route path="/store" element={<Store />} /> {/* Ruta para la tienda */}
-            <Route path="/statistics" element={<Statistics />} /> {/* Ruta para estadísticas */}
+            <Route path="/" element={<Home />} />
+            <Route path="/upload" element={<UploadProduct user={user} />} /> {/* Pasa el user aquí */}
+            <Route path="/read" element={<ReadProducts />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/store" element={<Store />} />
+            <Route path="/statistics" element={<Statistics />} />
           </Routes>
         </main>
-
-        {/* El componente Footer se renderiza en todas las rutas como pie de página */}
         <Footer />
       </Router>
     );
 }
 
-// Exportamos el componente Root para que pueda ser usado en otros lugares de la aplicación
 export default Root;
