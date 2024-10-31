@@ -3,10 +3,11 @@ import { collection, addDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase'; // Importar la instancia de Firebase
 import Swal from 'sweetalert2'; // Importar SweetAlert para notificaciones
 import './Store.css'; // Importar estilos CSS específicos para este componente
+import PropTypes from 'prop-types';
 
-const VERSION_ID = '1234'; // ID estático de la versión que se usa para actualizar en Firestore
+const VERSION_ID = 'version vigente'; // ID estático de la versión que se usa para actualizar en Firestore
 
-const Store = () => {
+const Store = ({ user }) => {
     // Estados locales para manejar los productos del carrito y totales
     const [cartProducts, setCartProducts] = useState([]); // Productos en el carrito
     const [totalQuantity, setTotalQuantity] = useState(0); // Cantidad total de productos vendidos
@@ -61,9 +62,14 @@ const Store = () => {
 
     // Función para actualizar los stocks de los productos en la base de datos de Firebase
     const updateProductStocks = async () => {
+        // Verificar si user está definido antes de proceder
+        if (!user) {
+            console.error('User is undefined, cannot update stocks.');
+            throw new Error('User is not authenticated. Cannot update stocks.');
+        }
         try {
             for (const product of cartProducts) {
-                const productRef = doc(db, 'Productos', product.id); // Obtener referencia al producto en la base de datos
+                const productRef = doc(db, `users/${user.uid}/Productos`, product.id);
                 const productSnapshot = await getDoc(productRef); // Obtener el snapshot del producto actual
                 const currentStock = productSnapshot.data()?.stock; // Obtener el stock actual
 
@@ -80,18 +86,16 @@ const Store = () => {
 
     // Función para actualizar la versión en Firestore y en el localStorage
     const updateVersion = async () => {
-        const versionDocRef = doc(db, 'Versiones', VERSION_ID); // Referencia al documento de versiones
-        const versionSnapshot = await getDoc(versionDocRef); // Obtener el snapshot del documento de versiones
-        const currentVersion = versionSnapshot.data()?.version; // Obtener la versión actual
+        const versionDocRef = doc(db, 'users', user.uid, 'Versiones', VERSION_ID);
+        const versionSnapshot = await getDoc(versionDocRef);
+        const currentVersion = versionSnapshot.data()?.version;
 
         if (currentVersion !== undefined) {
-            // Si la versión existe, incrementarla en 1 y actualizarla en Firestore
             await updateDoc(versionDocRef, { version: currentVersion + 1 });
-            localStorage.removeItem('products'); // Limpiar los productos en localStorage
-            localStorage.setItem('version', currentVersion + 1); // Actualizar la versión en localStorage
+            localStorage.removeItem('products');
+            localStorage.setItem('version', currentVersion + 1);
         }
     };
-
     // Función para enviar la comanda, actualizar stocks y versiones
     // Función para enviar la comanda, actualizar stocks y versiones
     const handleSendOrder = async () => {
@@ -106,7 +110,7 @@ const Store = () => {
                 createdAt: new Date(), // Fecha de creación de la comanda
             };
 
-            await addDoc(collection(db, 'Ventas'), order); // Agregar la venta a la colección de 'Ventas' en Firestore
+            await addDoc(collection(db, 'users', user.uid, 'Ventas'), order);
             await updateVersion(); // Actualizar la versión después de enviar la comanda
             Swal.fire({
                 title: 'Comanda enviada',
@@ -180,6 +184,11 @@ const Store = () => {
 
         </div>
     );
+};
+Store.propTypes = {
+    user: PropTypes.shape({
+        uid: PropTypes.string.isRequired,
+    }),
 };
 
 export default Store; // Exportar componente Store

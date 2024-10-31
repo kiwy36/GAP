@@ -35,11 +35,11 @@ function Root() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/upload" element={<UploadProduct user={user} />} /> {/* Pasa el user aquí */}
-            <Route path="/read" element={<ReadProducts />} />
+            <Route path="/read" element={<ReadProducts user={user}/>} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/store" element={<Store />} />
-            <Route path="/statistics" element={<Statistics />} />
+            <Route path="/store" element={<Store user={user}/>} />
+            <Route path="/statistics" element={<Statistics user={user} />} />
           </Routes>
         </main>
         <Footer />
