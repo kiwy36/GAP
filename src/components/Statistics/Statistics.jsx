@@ -2,6 +2,7 @@ import { useState } from 'react'; // Importar useState para manejar los estados 
 import { collection, query, where, getDocs } from 'firebase/firestore'; // Importar funciones de Firebase para consultas
 import { db } from '../../services/firebase'; // Importar la referencia de la base de datos Firebase
 import './Statistics.css'; // Importar el archivo de estilos para el componente
+import PropTypes from 'prop-types';
 
 const Statistics = () => {
     // Definir los estados para manejar las fechas de inicio y fin, los datos de ventas, el producto más vendido, los ingresos, costes, ganancias y observaciones
@@ -15,7 +16,7 @@ const Statistics = () => {
     const [observations, setObservations] = useState([]); // Observaciones de los productos vendidos
 
     // Función para obtener ventas entre las fechas seleccionadas
-    const fetchSalesBetweenDates = async () => {
+    const fetchSalesBetweenDates = async ({ user }) => {
         if (startDate && endDate) {
             // Convertir las fechas de inicio y fin en objetos de tipo Date
             const start = new Date(startDate);
@@ -25,7 +26,7 @@ const Statistics = () => {
 
             // Realizar la consulta a la colección 'Ventas' en Firebase filtrando por el rango de fechas
             const q = query(
-                collection(db, 'Ventas'),
+                collection(db, `users/${user.uid}/Ventas`),
                 where('createdAt', '>=', start),
                 where('createdAt', '<', end)
             );
@@ -179,4 +180,9 @@ const Statistics = () => {
     );
 };
 
+Statistics.propTypes = {
+    user: PropTypes.shape({
+        uid: PropTypes.string.isRequired,
+    }).isRequired,
+};
 export default Statistics;
