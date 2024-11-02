@@ -64,7 +64,9 @@
     padding: 3px 6px;
     border-radius: 3px;
 }
-
+.instructions-title{
+    color: #007bff;
+}
 /* Estilos para tablets */
 @media (max-width: 980px) {
     .home-container {
