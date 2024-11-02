@@ -9,13 +9,20 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-
+  const validateEmail = (email) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+  };
   const validatePassword = (password) => {
     const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return regex.test(password);
   };
 
   const handleRegister = async () => {
+    if (!validateEmail(email)) {
+        setError('Por favor, ingresa un correo electrónico válido');
+        return;
+    }
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden');
       return;
