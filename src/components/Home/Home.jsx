@@ -23,7 +23,7 @@ const Home = () => {
                 <>
                     <div className='titles-app'>
                         <h1>Gestor de almacenamiento de información de productos</h1>
-                        <h2>¡Bienvenido, {user.email}!</h2>
+                        <h2 className='wellcome-user'>¡Bienvenido, {user.email}!</h2>
                         <h2>En esta app podrás subir información de tus productos, visualizarlos y actualizarlos.</h2>
                         <h3>Próximamente agregaremos diferenciación entre usuarios</h3>
                         <h2 className="instructions-title">Instrucciones</h2>
