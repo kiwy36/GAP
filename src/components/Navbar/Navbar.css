@@ -130,9 +130,8 @@
     .close-menu-mobile {
         display: block;
     }
-
     .navBar a, .logout-button {
-        padding: 12px 0; /* Espaciado más reducido para móviles */
+        padding: 12px 15px; /* Espaciado más reducido para móviles */
         width: 100%;
         text-align: center;
         font-size: 16px; /* Texto más pequeño */

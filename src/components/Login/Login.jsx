@@ -1,52 +1,76 @@
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { auth, signInWithEmailAndPassword } from '../../services/firebase.js';
-import Swal from 'sweetalert2'; // Librería para mostrar alertas interactivas
-import './Login.css'
+import Swal from 'sweetalert2';
+import './Login.css';
 
 const Login = () => {
-  // Estados para almacenar el email, la contraseña y posibles errores
-  const [email, setEmail] = useState(''); // Estado para almacenar el email del usuario
-  const [password, setPassword] = useState(''); // Estado para almacenar la contraseña del usuario
-  const [error, setError] = useState(''); // Estado para almacenar errores de inicio de sesión
-  const [userId, setUserId] = useState(null); // Estado para almacenar el userId del usuario autenticado
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [userId, setUserId] = useState(null);
 
-  // Función que maneja el proceso de inicio de sesión
+  // Función para validar formato de correo electrónico
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleLogin = async () => {
-    // Validación: si el email o la contraseña están vacíos, muestra un error
-    if (!email || !password) {
-      setError('Por favor, complete todos los campos');
+    // Validaciones antes de llamar a Firebase
+    if (!validateEmail(email)) {
+      setError('Por favor, ingresa un correo electrónico válido');
       return;
     }
 
-    setError(''); // Limpia el mensaje de error previo
+    if (password.trim() === '') {
+      setError('Por favor, ingresa tu contraseña');
+      return;
+    }
+
+    setError(''); // Limpia mensajes de error
 
     try {
-      // Llamada a Firebase para autenticar al usuario con email y contraseña
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user; // Obtiene el userId del usuario autenticado
-      
-      setUserId(user.uid);
-      localStorage.setItem('userId', user.uid); // guarda el userId en localStorage
+      const user = userCredential.user;
 
-      // Muestra una alerta de éxito si la autenticación es correcta
+      setUserId(user.uid);
+      localStorage.setItem('userId', user.uid);
+
       Swal.fire({
         title: "¡Bienvenido!",
         text: "Usuario autenticado exitosamente",
         icon: "success"
       });
     } catch (error) {
-      // Si ocurre un error, se captura y se muestra un mensaje de error
       console.error('Error en el inicio de sesión:', error);
-      setError('Error en el inicio de sesión: ' + error.message);
+
+      switch (error.code) {
+        case 'auth/user-not-found':
+          setError('Usuario no encontrado. Verifique que el correo electrónico sea correcto');
+          break;
+        case 'auth/wrong-password':
+          setError('Contraseña incorrecta. Verifique su contraseña e intente de nuevo');
+          break;
+        case 'auth/invalid-email':
+          setError('El formato de correo electrónico no es válido');
+          break;
+        case 'auth/invalid-credential':
+          setError('Las credenciales ingresadas son incorrectas. Verifique correo y contraseña');
+          break;
+        case 'auth/too-many-requests':
+          setError('Demasiados intentos fallidos. Por favor, espere e intente nuevamente');
+          break;
+        default:
+          setError('Error en el inicio de sesión. Verifique su correo y contraseña.');
+          break;
+      }
     }
   };
 
-  // Renderiza la interfaz de usuario para el formulario de inicio de sesión
   return (
     <div className="login-container">
       <h2>Iniciar Sesión</h2>
-      {/* Campo de entrada para el email */}
       <input 
         type="email" 
         placeholder="Email" 
@@ -54,7 +78,6 @@ const Login = () => {
         onChange={(e) => setEmail(e.target.value)} 
         className="input-field"
       />
-      {/* Campo de entrada para la contraseña */}
       <input 
         type="password" 
         placeholder="Contraseña" 
@@ -62,9 +85,7 @@ const Login = () => {
         onChange={(e) => setPassword(e.target.value)} 
         className="input-field"
       />
-      {/* Muestra un mensaje de error si existe */}
       {error && <p className="error-message">{error}</p>}
-      {/* Botón para iniciar sesión */}
       <button onClick={handleLogin} className="login-button">Iniciar Sesión</button>
     </div>
   );
