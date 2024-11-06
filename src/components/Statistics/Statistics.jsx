@@ -5,7 +5,7 @@ import './Statistics.css';
 import PropTypes from 'prop-types';
 
 const Statistics = ({ user }) => { 
-    // Definir los estados para manejar las fechas de inicio y fin, los datos de ventas, el producto más vendido, los ingresos, costes, ganancias y observaciones
+    // Estados para manejar fechas, ventas, y estadísticas
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [salesData, setSalesData] = useState([]);
@@ -14,12 +14,13 @@ const Statistics = ({ user }) => {
     const [totalCost, setTotalCost] = useState(0); 
     const [totalProfit, setTotalProfit] = useState(0); 
     const [observations, setObservations] = useState([]); 
+    const [methodsOfPayment, setMethodsOfPayment] = useState([]);  // Nuevo estado para los métodos de pago
 
     const fetchSalesBetweenDates = async () => {
         if (startDate && endDate) {
             const start = new Date(startDate);
             const end = new Date(endDate);
-            end.setDate(end.getDate() + 1);
+            end.setDate(end.getDate() + 1); // Asegura que se incluye el último día
 
             try {
                 const q = query(
@@ -31,19 +32,27 @@ const Statistics = ({ user }) => {
                 const querySnapshot = await getDocs(q); 
                 const sales = [];
                 const allObservations = []; 
+                const allMethodsOfPayment = [];  // Array para los métodos de pago
 
                 querySnapshot.forEach((doc) => {
                     const saleData = doc.data();
                     sales.push(saleData);
                     
                     saleData.products.forEach((product) => {
+                        // Agregar observaciones
                         if (product.observaciones && product.observaciones.trim() !== "") {
                             allObservations.push(`${product.nombre}: ${product.observaciones}`);
+                        }
+
+                        // Agregar métodos de pago
+                        if (product.metodoPago && product.metodoPago.trim() !== "") {
+                            allMethodsOfPayment.push(`${product.nombre}: ${product.metodoPago}`);
                         }
                     });
                 });
 
                 setObservations(allObservations); 
+                setMethodsOfPayment(allMethodsOfPayment);  // Guardar los métodos de pago
                 processSalesData(sales);
             } catch (error) {
                 console.error("Error al obtener las ventas: ", error);
@@ -156,6 +165,20 @@ const Statistics = ({ user }) => {
                     </ul>
                 ) : (
                     <p>No hay observaciones para este periodo.</p>
+                )}
+            </div>
+
+            {/* Nueva sección para mostrar los métodos de pago */}
+            <div className="observations-section">
+                <h3>Métodos de Pago</h3>
+                {methodsOfPayment.length > 0 ? (
+                    <ul>
+                        {methodsOfPayment.map((method, index) => (
+                            <li key={index}>{method}</li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No hay métodos de pago registrados para este periodo.</p>
                 )}
             </div>
         </div>
