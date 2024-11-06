@@ -112,7 +112,22 @@ const PreStore = ({ product, onClose, onConfirm }) => {
 
     // Calcular el coste total del producto basado en la cantidad seleccionada
     const totalCost = quantity > 0 ? quantity * product.coste : null;
-
+    const paymentMethods = [
+        'Efectivo',
+        'Tarjeta de débito',
+        'Tarjeta de crédito',
+        'Tarjeta prepago',
+        'Transferencia bancaria',
+        'Cheque',
+        'Pago móvil (Apple Pay, Google Pay)',
+        'Billetera digital (PayPal, Venmo)',
+        'Pago por QR (códigos QR de bancos)',
+        'Pago sin contacto (NFC)',
+        'Débito automático (autopay)',
+        'Criptomonedas (Bitcoin, Ethereum)',
+        'Pago por correo electrónico',
+        'Pago en línea (Stripe, Square)',
+    ];
     // Renderizado del componente PreStore
     return (
         <div className="prestore-modal">
@@ -150,18 +165,21 @@ const PreStore = ({ product, onClose, onConfirm }) => {
                     />
                 </label>
             </div>
-            <br/>
             {/* Nuevo campo para "Método de pago" */}
-            <div className='prestoreItem'>
-                <label>
+            <div className='prestoreItem prestore-method-container'>
+                <label className='prestore-method-label'>
                     Método de pago:
-                    <input 
-                        type="text" 
-                        value={paymentMethod} 
-                        onChange={(e) => setPaymentMethod(e.target.value)} // Maneja el cambio
-                        maxLength="60"
+                    <select
+                        className='prestore-method-select'
+                        value={paymentMethod}
+                        onChange={(e) => setPaymentMethod(e.target.value)} 
                         required
-                    />
+                    >
+                        <option value="">Selecciona un método de pago</option>
+                        {paymentMethods.map((method, index) => (
+                            <option key={index} value={method}>{method}</option>
+                        ))}
+                    </select>
                 </label>
             </div>
             <br/>

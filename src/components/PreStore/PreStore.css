@@ -1,7 +1,7 @@
 /* Estilo general del modal */
 .prestore-modal {
     position: fixed;
-    top: 10%;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
@@ -149,5 +149,58 @@
 
     .prestore-actions button {
         width: 48%;
+    }
+}
+/* Estilo para el contenedor del label y select */
+.prestore-method-label {
+    font-size: 12px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* Estilo para el select de método de pago */
+.prestore-method-select {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: #495057;
+    background-color: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    appearance: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+/* Efecto de sombra y borde en el select cuando está enfocado */
+.prestore-method-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.25);
+}
+
+/* Estilo de opciones dentro del select */
+.prestore-method-select option {
+    font-size: 14px;
+    color: #495057;
+}
+
+/* Espaciado superior para separar del contenido anterior */
+.prestore-method-container {
+    margin-top: 10px;
+}
+
+/* Estilos en el modal al pasar el ratón sobre el select */
+.prestore-method-select:hover {
+    background-color: #f8f9fa;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 600px) {
+    .prestore-method-select {
+        font-size: 13px;
+        padding: 6px 8px;
     }
 }
