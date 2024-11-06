@@ -44,9 +44,9 @@ const Store = ({ user }) => {
             existingProduct.subtotal += product.subtotal;
             existingProduct.costeTotal += product.costeTotal;
             existingProduct.observaciones += existingProduct.observaciones ? `; ${product.observaciones}` : product.observaciones; // Concatenar observaciones si existen
+            existingProduct.metodosPago = existingProduct.metodosPago ? `${existingProduct.metodosPago}, ${product.metodoPago}` : product.metodoPago;
         } else {
-            // Si no existe, agregar el producto al array
-            acc.push({ ...product });
+            acc.push({ ...product, metodosPago: product.metodoPago });
         }
         return acc;
     }, []);
@@ -162,6 +162,7 @@ const Store = ({ user }) => {
                             <p><strong>Cantidad:</strong> {product.cantidad}</p>
                             <p><strong>Subtotal:</strong> ${product.subtotal ? product.subtotal.toFixed(2) : '0.00'}</p>
                             <p><strong>Coste total:</strong> ${product.costeTotal ? product.costeTotal.toFixed(2) : '0.00'}</p>
+                            <p><strong>Método de Pago:</strong> {product.metodosPago}</p> {/* Mostrar métodos de pago concatenados */}
                             {product.observaciones && <p><strong>Observaciones:</strong> {product.observaciones}</p>}
                             <button 
                                 className="remove-btn"

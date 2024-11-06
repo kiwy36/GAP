@@ -79,6 +79,15 @@ const PreStore = ({ product, onClose, onConfirm }) => {
             return; // Salimos de la función si no es válido
         }
 
+        // **Nueva Verificación: El campo de "Método de pago" no debe estar vacío**
+        if (!paymentMethod.trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Método de pago requerido',
+                text: 'Por favor, completa el campo de "Método de pago" antes de confirmar.',
+            });
+            return; // Salimos de la función si el campo está vacío
+        }
         // Calcular subtotal (precio total) y el coste total para este producto
         const subtotal = quantity * product.precio;
         const costeTotal = quantity * product.coste;
@@ -151,6 +160,7 @@ const PreStore = ({ product, onClose, onConfirm }) => {
                         value={paymentMethod} 
                         onChange={(e) => setPaymentMethod(e.target.value)} // Maneja el cambio
                         maxLength="60"
+                        required
                     />
                 </label>
             </div>
@@ -164,8 +174,8 @@ const PreStore = ({ product, onClose, onConfirm }) => {
             {/* Botones para cancelar o confirmar la acción */}
             <button className='PreStore-cancel' onClick={onClose}>Cancelar</button>
             <button 
-                className='PreStore-confirm' 
-                onClick={handleConfirm} 
+                className='PreStore-confirm'
+                onClick={handleConfirm}
                 disabled={maxSelectable === 0} // Deshabilitado si no hay stock disponible
             >
                 Confirmar
