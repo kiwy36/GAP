@@ -8,7 +8,7 @@
     background-color: #ffffff; /* Color de fondo blanco */
     border-radius: 8px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    padding: 20px;
+    padding: 15px; /* Reducir padding */
     width: 90%;
     max-width: 400px;
     animation: slideDown 0.3s ease-out;
@@ -47,13 +47,13 @@
 .prestore-product {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espaciado más amplio para mejor organización */
+    gap: 10px; /* Reducir espaciado */
 }
 
 /* Estilo de los items */
 .prestoreItem {
     background-color: #f1f1f1; /* Fondo gris claro */
-    padding: 10px;
+    padding: 8px; /* Reducir padding */
     border-radius: 4px;
     border: 1px solid #ddd;
     transition: transform 0.3s ease; /* Efecto de transición */
@@ -68,15 +68,15 @@
 .prestore-actions {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    margin-top: 15px; /* Reducir margen superior */
 }
 
 .prestore-actions button {
-    padding: 10px 15px;
+    padding: 8px 12px; /* Reducir padding */
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px; /* Reducir tamaño de fuente */
     transition: background-color 0.3s ease, transform 0.3s ease; /* Añadir efecto de transición */
 }
 
@@ -84,7 +84,7 @@
 .PreStore-cancel {
     background-color: #dc3545;
     color: white;
-    margin: 0 10px;
+    margin: 0 5px; /* Reducir margen */
     border-radius: 8px;
 }
 
@@ -96,7 +96,7 @@
 .PreStore-confirm {
     background-color: #28a745;
     color: white;
-    margin: 0 10px;
+    margin: 0 5px; /* Reducir margen */
     border-radius: 8px;
 }
 
@@ -107,19 +107,19 @@
 
 /* Estilos para las etiquetas y campos de producto */
 .prestore-product label {
-    font-size: 14px;
+    font-size: 12px; /* Reducir tamaño de fuente */
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 4px; /* Reducir margen inferior */
     display: block;
 }
 
 .prestore-product input[type="number"],
 .prestore-product input[type="text"] {
     width: 100%;
-    padding: 10px 12px;
+    padding: 8px 10px; /* Reducir padding */
     border: 1px solid #ced4da;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 14px; /* Reducir tamaño de fuente */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     box-sizing: border-box;
 }
@@ -133,8 +133,8 @@
 
 /* Título del modal */
 .prestore-title {
-    font-size: 22px;
-    margin-bottom: 20px;
+    font-size: 18px; /* Reducir tamaño de fuente */
+    margin-bottom: 15px; /* Reducir margen inferior */
     text-align: center;
     font-weight: bold;
     color: #333;
@@ -144,7 +144,7 @@
 @media (max-width: 600px) {
     .prestore-modal {
         width: 95%;
-        padding: 15px;
+        padding: 10px; /* Reducir padding */
     }
 
     .prestore-actions button {

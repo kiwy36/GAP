@@ -1,16 +1,7 @@
-// Importamos hooks de React: useState para manejar el estado y useEffect para ejecutar efectos secundarios
 import { useState, useEffect } from 'react';
-
-// Importamos PropTypes para la validación de tipos en los props
 import PropTypes from 'prop-types';
-
-// Importamos SweetAlert2 para mostrar alertas visuales
 import Swal from 'sweetalert2';
-
-// Importamos los estilos específicos del componente PreStore
 import './PreStore.css';
-
-// Definimos el componente PreStore, que recibe 'product', 'onClose' y 'onConfirm' como props
 const PreStore = ({ product, onClose, onConfirm }) => {
     // Estado para manejar la cantidad seleccionada
     const [quantity, setQuantity] = useState(1);
@@ -21,9 +12,11 @@ const PreStore = ({ product, onClose, onConfirm }) => {
     // Estado para controlar la cantidad máxima seleccionable basada en el stock disponible
     const [maxSelectable, setMaxSelectable] = useState(product.stock);
 
+    const [paymentMethod, setPaymentMethod] = useState(''); // Nuevo estado para el método de pago
+   
     // Estado para almacenar la cantidad total vendida del producto (obtenida desde localStorage)
     // eslint-disable-next-line no-unused-vars
-    const [totalSold, setTotalSold] = useState(0); 
+    const [totalSold, setTotalSold] = useState(0);
 
     // useEffect para actualizar el stock máximo basado en las cantidades ya agregadas al carrito
     useEffect(() => {
@@ -98,6 +91,7 @@ const PreStore = ({ product, onClose, onConfirm }) => {
             subtotal, // Precio total
             costeTotal, // Coste total del producto
             observaciones: observations, // Observaciones del usuario
+            metodoPago: paymentMethod,
         };
 
         // Llamamos a la función 'onConfirm' (del componente padre) y pasamos el producto vendido
@@ -147,7 +141,20 @@ const PreStore = ({ product, onClose, onConfirm }) => {
                     />
                 </label>
             </div>
-
+            <br/>
+            {/* Nuevo campo para "Método de pago" */}
+            <div className='prestoreItem'>
+                <label>
+                    Método de pago:
+                    <input 
+                        type="text" 
+                        value={paymentMethod} 
+                        onChange={(e) => setPaymentMethod(e.target.value)} // Maneja el cambio
+                        maxLength="60"
+                    />
+                </label>
+            </div>
+            <br/>
             {/* Mostrar el total calculado */}
             <p className='prestoreItem'><strong>Total:</strong> {quantity > 0 ? `$${quantity * product.precio}` : 'Elija número de productos'}</p>
 
