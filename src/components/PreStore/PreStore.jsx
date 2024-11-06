@@ -119,14 +119,12 @@ const PreStore = ({ product, onClose, onConfirm }) => {
         'Tarjeta prepago',
         'Transferencia bancaria',
         'Cheque',
-        'Pago móvil (Apple Pay, Google Pay)',
-        'Billetera digital (PayPal, Venmo)',
-        'Pago por QR (códigos QR de bancos)',
-        'Pago sin contacto (NFC)',
-        'Débito automático (autopay)',
-        'Criptomonedas (Bitcoin, Ethereum)',
-        'Pago por correo electrónico',
-        'Pago en línea (Stripe, Square)',
+        'Pago móvil',
+        'Billetera digital',
+        'Pago por QR',
+        'Débito automático',
+        'Criptomonedas',
+        'Pago en línea',
     ];
     // Renderizado del componente PreStore
     return (

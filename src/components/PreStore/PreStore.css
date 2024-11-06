@@ -157,6 +157,8 @@
     font-weight: bold;
     display: block;
     margin-bottom: 4px;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 /* Estilo para el select de método de pago */
@@ -172,13 +174,10 @@
     appearance: none;
     cursor: pointer;
     box-sizing: border-box;
-}
-
-/* Efecto de sombra y borde en el select cuando está enfocado */
-.prestore-method-select:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 6px rgba(0, 123, 255, 0.25);
+    max-width: 100%; /* Asegura que no se desborde del contenedor */
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Estilo de opciones dentro del select */
@@ -201,6 +200,6 @@
 @media (max-width: 600px) {
     .prestore-method-select {
         font-size: 13px;
-        padding: 6px 8px;
+        max-width: 100%;
     }
 }
