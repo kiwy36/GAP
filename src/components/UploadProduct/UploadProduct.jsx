@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { collection, addDoc, getDocs, query, where, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, doc, updateDoc, getDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import Swal from 'sweetalert2';
 import './UploadProduct.css';
@@ -83,10 +83,28 @@ const UploadProduct = ({ user }) => {
         }
     
         try {
-            // Añadir nueva categoría
+            // Verificar si "Gestionar categorías" existe y eliminarla solo la primera vez
+            if (categories.includes("Gestionar categorias")) {
+                const gestionarCatRef = query(
+                    collection(db, 'users', user.uid, 'UserCategories'),
+                    where("name", "==", "Gestionar categorias")
+                );
+                const gestionarCatSnapshot = await getDocs(gestionarCatRef);
+    
+                if (!gestionarCatSnapshot.empty) {
+                    const docId = gestionarCatSnapshot.docs[0].id; // ID del documento de "Gestionar categorias"
+                    await deleteDoc(doc(db, 'users', user.uid, 'UserCategories', docId)); // Eliminar de Firestore
+                    setCategories((prevCategories) =>
+                        prevCategories.filter((cat) => cat !== "Gestionar categorias")
+                    ); // Eliminar de estado local
+                }
+            }
+    
+            // Añadir la nueva categoría
             await addDoc(collection(db, 'users', user.uid, 'UserCategories'), { name: capitalizeFirstLetter(newCategory) });
             setNewCategory(''); // Limpiar el campo de entrada
             await loadCategories(); // Volver a cargar las categorías
+    
             Swal.fire({
                 title: 'Éxito',
                 text: 'Categoría añadida con éxito',
