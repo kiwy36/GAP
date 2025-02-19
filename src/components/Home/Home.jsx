@@ -54,7 +54,7 @@ const Home = () => {
                             <p>Con estas herramientas, puedes administrar tu inventario de forma eficiente y tener una visión clara de tus operaciones.</p>
                         </div>
                     </div>
-                    <img className='background-image updated-image' src="https://lh3.googleusercontent.com/pw/AP1GczNg294d1O44mTghGBntqW5dO-LhA7hnWUicyp0kkMhG2QNfpdZUY4vWRkzB5Io5qZzgPAVVqU8RZintitNqUsz-PQvN_RajR1WZn-32rl0OvfYQJ4F9oLcr_YWFEGlGQu2VUdOg6P6KE-eRFPVwlOiJkA=w618-h618-s-no?authuser=0" alt="imghome" />
+                    <img className='background-image updated-image' src="https://i.ibb.co/hFLsT0PX/kiwi-feliz.jpg" alt="imghome" />
                 </>
             ) : (
                 <div className="auth-section">
